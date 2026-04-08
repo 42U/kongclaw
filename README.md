@@ -23,7 +23,7 @@
 
 ## What It Does
 
-KongClaw is a persistent AI agent built on a SurrealDB knowledge graph. Every conversation becomes structured memory — concepts, causal chains, skills, and reflections — all connected through graph edges that compound over time.
+KongClaw is a persistent AI agent built on a SurrealDB knowledge graph. Every conversation becomes structured memory: concepts, causal chains, skills, and reflections. All connected through graph edges that compound over time.
 
 | Capability | Traditional Agent | KongClaw |
 |-----------|------------------|----------|
@@ -72,9 +72,11 @@ npm install
 ### 3. Run
 
 ```bash
-npm start           # TUI mode (default — the full experience)
-npm run cli         # Basic readline REPL (fallback / debug)
+npm start
+npm run cli
 ```
+
+`npm start` launches the full TUI experience. `npm run cli` is a basic readline REPL for debugging.
 
 On first run, a setup wizard walks you through configuration. The embedding model (BGE-M3, ~420MB) downloads automatically. If SurrealDB is installed but not running, KongClaw starts a managed instance for you.
 
@@ -87,7 +89,7 @@ curl -fSL -o ~/.node-llama-cpp/models/bge-reranker-v2-m3-Q8_0.gguf \
   "https://huggingface.co/gpustack/bge-reranker-v2-m3-GGUF/resolve/main/bge-reranker-v2-m3-Q8_0.gguf"
 ```
 
-Auto-detected on startup. ~606MB. Without it, retrieval still works via WMR scoring — just without the reranking stage.
+Auto-detected on startup. ~606MB. Without it, retrieval still works via WMR scoring, just without the reranking stage.
 
 <details>
 <summary><strong>Configuration</strong></summary>
@@ -96,7 +98,7 @@ Environment variables (all optional, sensible defaults):
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | — | Claude API key (also accepts `ANTHROPIC_OAUTH_TOKEN`) |
+| `ANTHROPIC_API_KEY` | - | Claude API key (also accepts `ANTHROPIC_OAUTH_TOKEN`) |
 | `SURREAL_URL` | `ws://localhost:8042/rpc` | SurrealDB WebSocket endpoint |
 | `SURREAL_USER` / `SURREAL_PASS` | `root` / `root` | SurrealDB auth |
 | `SURREAL_NS` / `SURREAL_DB` | `kong` / `memory` | SurrealDB namespace and database |
@@ -114,7 +116,7 @@ Also reads from `~/.surreal_env`.
 
 ## Benchmarks
 
-### LongMemEval — AI Memory Retrieval (500 questions, 6 types)
+### LongMemEval: AI Memory Retrieval (500 questions, 6 types)
 
 Benchmarked against [LongMemEval](https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned), the standard academic benchmark for AI memory systems:
 
@@ -202,7 +204,7 @@ Postflight ──────── Orchestrator metrics, reflection if threshol
 | `reflection` | Metacognitive lessons from session performance |
 | `causal_chain` | Cause-effect patterns (trigger, outcome, chain type) |
 | `core_memory` | Tier 0 (always loaded) + Tier 1 (session-pinned) directives |
-| `soul` | Emergent identity document — earned through graduation |
+| `soul` | Emergent identity document, earned through graduation |
 | `agent`, `project`, `task`, `artifact` | 5-pillar structural model |
 
 **Edge relations:** `responds_to`, `mentions`, `caused_by`, `supports`, `contradicts`, `supersedes`, `narrower`, `broader`, `related_to`, `reflects_on`, `skill_from_task`, `about_concept`, and more.
@@ -225,7 +227,7 @@ Fast path for trivial inputs. Confidence gate for uncertain classification.
 </details>
 
 <details>
-<summary><strong>WMR v3 Scoring</strong> — 8-signal weighted memory ranker</summary>
+<summary><strong>WMR v3 Scoring</strong>: 8-signal weighted memory ranker</summary>
 
 ```
 score = 0.22 * cosine
@@ -244,7 +246,7 @@ ACAN (130K-param cross-attention network) replaces this once 5,000+ labeled retr
 </details>
 
 <details>
-<summary><strong>Concept Supersedes</strong> — stale knowledge auto-deprioritizes</summary>
+<summary><strong>Concept Supersedes</strong>: stale knowledge auto-deprioritizes</summary>
 
 When the memory daemon extracts a correction (user correcting the assistant):
 1. Embeds the *original* (wrong) statement
@@ -271,7 +273,7 @@ Soul document: working style, self-observations, earned values grounded in speci
 
 | Command | Description |
 |---------|-------------|
-| `/stats` | Session statistics — context tokens, retrieval quality, reranker status |
+| `/stats` | Session statistics: context tokens, retrieval quality, reranker status |
 | `/spawn full\|incognito <task>` | Spawn a subagent |
 | `/merge <id>` | Merge incognito agent's knowledge back |
 | `/agents` | List spawned subagents |
@@ -303,21 +305,19 @@ Soul document: working style, self-observations, earned values grounded in speci
 ## Development
 
 ```bash
-npm run dev        # TypeScript watch mode
-npm test           # Run test suite (vitest, 404 tests)
-npm run test:watch # Watch mode tests
-npm run build      # Build to dist/ (also copies schema.surql)
+npm run dev
+npm test
+npm run test:watch
+npm run build
 ```
 
 ### Run the Benchmark
 
 ```bash
-# Download LongMemEval data
 mkdir -p /tmp/longmemeval-data
 curl -fsSL -o /tmp/longmemeval-data/longmemeval_s_cleaned.json \
   https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json
 
-# Run benchmark (raw, hybrid, rerank, or hybrid-rerank)
 npx tsx src/bench-longmemeval.ts /tmp/longmemeval-data/longmemeval_s_cleaned.json --mode rerank
 ```
 
@@ -325,25 +325,25 @@ npx tsx src/bench-longmemeval.ts /tmp/longmemeval-data/longmemeval_s_cleaned.jso
 
 ## Why KongClaw Exists
 
-Every AI agent on the market is stateless. Session ends, everything vanishes. The next session starts from zero — same mistakes, same re-explanations, same blank slate. The industry's answer is RAG: bolt a vector store onto the side, embed some chunks, cosine-similarity your way to "memory." It works for demos. It fails for real work.
+Every AI agent on the market is stateless. Session ends, everything vanishes. The next session starts from zero. Same mistakes, same re-explanations, same blank slate. The industry's answer is RAG: bolt a vector store onto the side, embed some chunks, cosine-similarity your way to "memory." It works for demos. It fails for real work.
 
 Here's what's wrong with the current landscape:
 
-**Mem0, LangChain, AutoGPT** — use an LLM to decide what to remember, then throw away the original. When the LLM extracts "user prefers PostgreSQL" and discards the 3-session conversation about why, it loses the context that makes memory useful. Mem0 scores 30-45% on ConvoMem. KongClaw's architecture scores 92.9% on the same benchmark class.
+**Mem0, LangChain, AutoGPT** use an LLM to decide what to remember, then throw away the original. When the LLM extracts "user prefers PostgreSQL" and discards the 3-session conversation about why, it loses the context that makes memory useful. Mem0 scores 30-45% on ConvoMem. KongClaw's architecture scores 92.9% on the same benchmark class.
 
-**MemPalace** — proved that raw verbatim storage beats LLM extraction (96.6% R@5). Good insight. But it's a single-stage cosine search over ChromaDB with no learning, no graph, no adaptation. It went viral because an actress promoted it, not because the architecture is interesting.
+**MemPalace** proved that raw verbatim storage beats LLM extraction (96.6% R@5). Good insight. But it's a single-stage cosine search over ChromaDB with no learning, no graph, no adaptation. It went viral because an actress promoted it, not because the architecture is interesting.
 
-**KongClaw** — built different:
+**KongClaw** is built different:
 
 1. **Retrieval isn't one stage, it's five.** Vector search across 6 tables → tag-boosted concept lookup → graph neighbor expansion across typed edges → 8-signal weighted scoring → cross-encoder reranking. Each stage catches what the previous one missed. 98.2% R@5 on LongMemEval with zero API calls.
 
-2. **The graph isn't decoration, it's structural.** `caused_by`, `supports`, `contradicts`, `supersedes`, `narrower`, `broader` — these edges encode relationships that embeddings fundamentally cannot capture. When you ask "what caused the auth failure?", cosine similarity finds the failure. Graph traversal finds the cause.
+2. **The graph isn't decoration, it's structural.** `caused_by`, `supports`, `contradicts`, `supersedes`, `narrower`, `broader`. These edges encode relationships that embeddings fundamentally cannot capture. When you ask "what caused the auth failure?", cosine similarity finds the failure. Graph traversal finds the cause.
 
-3. **The system learns from itself.** Every retrieval outcome is tracked — was this memory actually used in the response? After 5,000 outcomes, ACAN (a 131K-parameter cross-attention network) trains itself to replace the fixed scoring weights. No human labeling. No external training data. The agent improves by using itself.
+3. **The system learns from itself.** Every retrieval outcome is tracked. Was this memory actually used in the response? After 5,000 outcomes, ACAN (a 131K-parameter cross-attention network) trains itself to replace the fixed scoring weights. No human labeling. No external training data. The agent improves by using itself.
 
-4. **Corrections don't just add — they supersede.** When you correct the agent, the supersedes system finds the stale concept, creates an edge, and decays its stability by 60%. Old knowledge doesn't compete with corrections in retrieval. It gets structurally demoted.
+4. **Corrections don't just add. They supersede.** When you correct the agent, the supersedes system finds the stale concept, creates an edge, and decays its stability by 60%. Old knowledge doesn't compete with corrections in retrieval. It gets structurally demoted.
 
-5. **The agent earns its identity.** After 15+ sessions, 10+ reflections, 30+ concepts, and 3+ days of experience, the agent graduates and authors a Soul document — a self-assessment grounded in actual behavior, not a prompted persona. It wakes up each session knowing who it is, what it was working on, and what went wrong last time.
+5. **The agent earns its identity.** After 15+ sessions, 10+ reflections, 30+ concepts, and 3+ days of experience, the agent graduates and authors a Soul document. A self-assessment grounded in actual behavior, not a prompted persona. It wakes up each session knowing who it is, what it was working on, and what went wrong last time.
 
 This isn't a wrapper around an LLM. It's a cognitive architecture where every session makes the next one better. The graph compounds. The scoring adapts. The knowledge evolves. That's the difference.
 
