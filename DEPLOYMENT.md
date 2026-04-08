@@ -203,7 +203,7 @@ Environment variables override config file values:
 
 | File | Change |
 |---|---|
-| `src/config.ts` | Read from `~/.kongclaw/config.json` instead of `~/.surreal_env` and OpenClaw paths. Keep env var overrides. |
+| `src/config.ts` | Read from `~/.kongclaw/config.json` instead of `~/.surreal_env` and legacy auth paths. Keep env var overrides. |
 | `src/embeddings.ts` | Default model path to `~/.kongclaw/models/bge-m3-q4_k_m.gguf` |
 | `src/index.ts` | Route subcommands (`setup`, `start`, `stop`, `status`, `reset`). Auto-start SurrealDB on REPL entry. |
 | `package.json` | Add `postinstall` message pointing to `kongclaw setup`. Add subcommand routing. |

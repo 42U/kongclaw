@@ -22,7 +22,7 @@ let managedSurreal: ChildProcess | null = null;
 // ── Config resolution ──────────────────────────────────────────────────────
 
 /**
- * Resolve config: env vars > persisted config > OpenClaw profiles > defaults.
+ * Resolve config: env vars > persisted config > auth profiles > defaults.
  * Only runs the setup wizard if no API key can be found anywhere.
  */
 export async function resolveConfig(): Promise<PersistedConfig> {
@@ -31,7 +31,7 @@ export async function resolveConfig(): Promise<PersistedConfig> {
   if (persisted) return persisted;
 
   // No persisted config — check if loadConfig can find an API key
-  // from env vars, .env, ~/.surreal_env, or OpenClaw auth profiles
+  // from env vars, .env, ~/.surreal_env, or legacy auth profiles
   const probed = loadConfig();
   if (probed.anthropicApiKey) {
     // Key found via existing sources — build a PersistedConfig from them

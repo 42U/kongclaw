@@ -156,7 +156,7 @@ export async function createZeraAgent(
   const MIDDLE_OMISSION_MARKER = "\n\n[... middle content omitted — showing head and tail ...]\n\n";
 
   // Detect whether text has important content near the end (errors, JSON, summaries)
-  // that should be preserved during truncation — pattern from openclaw
+  // that should be preserved during truncation — pattern from pi-agent
   function hasImportantTail(text: string): boolean {
     const tail = text.slice(-2000).toLowerCase();
     return (

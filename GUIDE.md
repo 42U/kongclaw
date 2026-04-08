@@ -545,13 +545,13 @@ Component-based terminal UI using `@mariozechner/pi-tui`:
 | Path | Purpose |
 |---|---|
 | `~/.surreal_env` | SurrealDB credentials (shell-style `export VAR="value"`) |
-| `~/.openclaw/agents/main/agent/auth-profiles.json` | OpenClaw API key profiles |
+| `~/.openclaw/agents/main/agent/auth-profiles.json` | Legacy auth profiles |
 | `~/.kongclaw/acan_weights.json` | Trained ACAN model weights |
 | `~/.kongclaw/acan_training_log.json` | ACAN training run history (last 20) |
 | `~/.kongclaw/warnings.log` | Persistent warning/error log |
 | `~/.node-llama-cpp/models/` | Embedding + reranker model storage |
 
-**Priority order:** Environment variables → `~/.surreal_env` → OpenClaw profiles → defaults.
+**Priority order:** Environment variables → `~/.surreal_env` → auth profiles → defaults.
 
 ---
 

@@ -31,8 +31,8 @@ export interface Config {
   model: string;
 }
 
-function loadOpenClawKey(): string | undefined {
-  // Read Anthropic API key from OpenClaw auth profiles
+function loadLegacyKey(): string | undefined {
+  // Read Anthropic API key from legacy auth profiles
   const paths = [
     join(homedir(), ".openclaw", "agents", "main", "agent", "auth-profiles.json"),
   ];
@@ -81,10 +81,10 @@ export function loadConfig(persisted?: PersistedConfig): Config {
     process.env.ANTHROPIC_API_KEY
     ?? process.env.ANTHROPIC_OAUTH_TOKEN
     ?? persisted?.anthropicApiKey
-    ?? loadOpenClawKey()
+    ?? loadLegacyKey()
     ?? "";
   if (!anthropicApiKey) {
-    console.warn("Warning: No Anthropic API key found (checked env, persisted config, OpenClaw)");
+    console.warn("Warning: No Anthropic API key found (checked env, persisted config, legacy profiles)");
   }
 
   return {

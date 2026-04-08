@@ -13,7 +13,7 @@
 [![Claude](https://img.shields.io/badge/Claude-Opus_4.6-d4a574?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com)
 [![Tests](https://img.shields.io/badge/Tests-404_passing-brightgreen?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev)
 
-**A graph-backed cognitive agent that learns across sessions.** The standalone brain behind [OpenClaw](https://github.com/42U).
+**A graph-backed cognitive agent that learns across sessions.** 
 
 [Quick Start](#quick-start) | [Benchmarks](#benchmarks) | [Architecture](#architecture) | [How It Works](#how-it-works) | [Commands](#commands) | [Development](#development)
 
@@ -99,12 +99,12 @@ Environment variables (all optional, sensible defaults):
 | `ANTHROPIC_API_KEY` | — | Claude API key (also accepts `ANTHROPIC_OAUTH_TOKEN`) |
 | `SURREAL_URL` | `ws://localhost:8042/rpc` | SurrealDB WebSocket endpoint |
 | `SURREAL_USER` / `SURREAL_PASS` | `root` / `root` | SurrealDB auth |
-| `SURREAL_NS` / `SURREAL_DB` | `zera` / `memory` | SurrealDB namespace and database |
+| `SURREAL_NS` / `SURREAL_DB` | `kong` / `memory` | SurrealDB namespace and database |
 | `EMBED_MODEL_PATH` | `~/.node-llama-cpp/models/bge-m3-q4_k_m.gguf` | Path to BGE-M3 GGUF model |
 | `RERANKER_MODEL_PATH` | `~/.node-llama-cpp/models/bge-reranker-v2-m3-Q8_0.gguf` | Path to reranker GGUF model |
-| `ZERACLAW_MODEL` | `claude-opus-4-6` | Default Claude model |
+| `KONGCLAW_MODEL` | `claude-opus-4-6` | Default Claude model |
 
-Also reads from `~/.surreal_env` and OpenClaw auth profiles.
+Also reads from `~/.surreal_env`.
 
 > **Security note:** The setup wizard stores your API key in `~/.kongclaw/config.json` (mode `600`, owner-only). For shared environments, prefer environment variables.
 
@@ -323,16 +323,34 @@ npx tsx src/bench-longmemeval.ts /tmp/longmemeval-data/longmemeval_s_cleaned.jso
 
 ---
 
-## The Vision: OpenClaw
+## Why KongClaw Exists
 
-KongClaw is the brain. **OpenClaw** will be the complete system — agent + embodiment + integrations. This repo is the standalone cognitive core.
+Every AI agent on the market is stateless. Session ends, everything vanishes. The next session starts from zero — same mistakes, same re-explanations, same blank slate. The industry's answer is RAG: bolt a vector store onto the side, embed some chunks, cosine-similarity your way to "memory." It works for demos. It fails for real work.
 
-For now: a persistent partner in the terminal. It remembers. It learns. It grows smarter every session.
+Here's what's wrong with the current landscape:
+
+**Mem0, LangChain, AutoGPT** — use an LLM to decide what to remember, then throw away the original. When the LLM extracts "user prefers PostgreSQL" and discards the 3-session conversation about why, it loses the context that makes memory useful. Mem0 scores 30-45% on ConvoMem. KongClaw's architecture scores 92.9% on the same benchmark class.
+
+**MemPalace** — proved that raw verbatim storage beats LLM extraction (96.6% R@5). Good insight. But it's a single-stage cosine search over ChromaDB with no learning, no graph, no adaptation. It went viral because an actress promoted it, not because the architecture is interesting.
+
+**KongClaw** — built different:
+
+1. **Retrieval isn't one stage, it's five.** Vector search across 6 tables → tag-boosted concept lookup → graph neighbor expansion across typed edges → 8-signal weighted scoring → cross-encoder reranking. Each stage catches what the previous one missed. 98.2% R@5 on LongMemEval with zero API calls.
+
+2. **The graph isn't decoration, it's structural.** `caused_by`, `supports`, `contradicts`, `supersedes`, `narrower`, `broader` — these edges encode relationships that embeddings fundamentally cannot capture. When you ask "what caused the auth failure?", cosine similarity finds the failure. Graph traversal finds the cause.
+
+3. **The system learns from itself.** Every retrieval outcome is tracked — was this memory actually used in the response? After 5,000 outcomes, ACAN (a 131K-parameter cross-attention network) trains itself to replace the fixed scoring weights. No human labeling. No external training data. The agent improves by using itself.
+
+4. **Corrections don't just add — they supersede.** When you correct the agent, the supersedes system finds the stale concept, creates an edge, and decays its stability by 60%. Old knowledge doesn't compete with corrections in retrieval. It gets structurally demoted.
+
+5. **The agent earns its identity.** After 15+ sessions, 10+ reflections, 30+ concepts, and 3+ days of experience, the agent graduates and authors a Soul document — a self-assessment grounded in actual behavior, not a prompted persona. It wakes up each session knowing who it is, what it was working on, and what went wrong last time.
+
+This isn't a wrapper around an LLM. It's a cognitive architecture where every session makes the next one better. The graph compounds. The scoring adapts. The knowledge evolves. That's the difference.
 
 ---
 
 <div align="center">
 
-MIT License | Built by [42U](https://github.com/42U)
+MIT License | Built by [42U](https://github.com/42U) | [VoidOrigin](https://voidorigin.com)
 
 </div>
