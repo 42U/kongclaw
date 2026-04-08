@@ -1,0 +1,39 @@
+{
+  "name": "kongclaw",
+  "version": "0.2.0",
+  "description": "Graph-backed agentic CLI — SurrealDB knowledge graph + Ollama embeddings for minimal-context AI interactions",
+  "author": "42U",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/42U/kongclaw.git"
+  },
+  "type": "module",
+  "bin": {
+    "kongclaw": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && cp src/schema.surql dist/schema.surql",
+    "dev": "tsc --watch",
+    "start": "npm run build && node dist/index.js",
+    "cli": "npm run build && node dist/index.js --cli",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.73.0",
+    "@mariozechner/pi-agent-core": "^0.58.0",
+    "@mariozechner/pi-ai": "^0.58.0",
+    "@mariozechner/pi-coding-agent": "^0.58.0",
+    "@mariozechner/pi-tui": "^0.58.4",
+    "chalk": "^5.6.2",
+    "cli-highlight": "^2.1.11",
+    "node-llama-cpp": "^3.18.1",
+    "surrealdb": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.1.0"
+  }
+}

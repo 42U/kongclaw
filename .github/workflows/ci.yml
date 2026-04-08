@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check for console.log in source (not tests/bench)
+        run: |
+          if grep -rn "console\.log" src/ --include="*.ts" | grep -v "// ok" | grep -v "console\.log(" | head -5; then
+            echo "::warning::Found console.log in source files (use console.error for debug output)"
+          fi
+
+      - name: Verify no secrets in tracked files
+        run: |
+          if grep -rn "sk-ant-\|ANTHROPIC_API_KEY=sk" --include="*.ts" --include="*.json" --include="*.md" | grep -v ".example" | grep -v "placeholder" | head -5; then
+            echo "::error::Possible API key in tracked files"
+            exit 1
+          fi

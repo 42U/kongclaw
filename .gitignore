@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+books/
+.DS_Store
+*.swp
+*.swo
+test-*.mjs
+test-integration.ts
+.kongclaw-handoff.json
+history.txt
+*.jsonl
+.claude/
+.data/
