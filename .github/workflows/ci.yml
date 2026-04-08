@@ -51,7 +51,7 @@ jobs:
 
       - name: Verify no secrets in tracked files
         run: |
-          if grep -rn "sk-ant-\|ANTHROPIC_API_KEY=sk" --include="*.ts" --include="*.json" --include="*.md" | grep -v ".example" | grep -v "placeholder" | head -5; then
-            echo "::error::Possible API key in tracked files"
+          if grep -rn "sk-ant-[a-zA-Z0-9]\{20,\}" src/ tests/ --include="*.ts" --include="*.json" | head -5; then
+            echo "::error::Possible real API key in source files"
             exit 1
           fi

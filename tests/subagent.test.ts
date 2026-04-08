@@ -64,14 +64,14 @@ describe("subagent system", () => {
   describe("getSurrealConfigForMode", () => {
     it("returns same ns/db for full mode", () => {
       const config = getSurrealConfigForMode(parentConfig, "full");
-      expect(config.ns).toBe("zera");
+      expect(config.ns).toBe("kong");
       expect(config.db).toBe("memory");
       expect(config.url).toBe(parentConfig.url);
     });
 
     it("returns isolated db for incognito mode", () => {
       const config = getSurrealConfigForMode(parentConfig, "incognito", "incognito_123_abc");
-      expect(config.ns).toBe("zera");
+      expect(config.ns).toBe("kong");
       expect(config.db).toBe("memory_incognito_123_abc");
       expect(config.url).toBe(parentConfig.url);
     });
@@ -166,7 +166,7 @@ describe("subagent system", () => {
       };
       expect(msg.type).toBe("start");
       expect(msg.config.mode).toBe("full");
-      expect(msg.surrealConfig.ns).toBe("zera");
+      expect(msg.surrealConfig.ns).toBe("kong");
     });
 
     it("complete message has required fields", () => {

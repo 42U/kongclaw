@@ -80,7 +80,7 @@ describe("introspect tool", () => {
     const result = await tool.execute("call2", { action: "status" });
     const t = text(result);
     expect(t).toContain("ws://localhost:8042/rpc");
-    expect(t).toContain("zera");
+    expect(t).toContain("kong");
     expect(t).toContain("memory");
     expect(t).toContain("Ping:        OK");
     expect(t).toContain("session:test123");
