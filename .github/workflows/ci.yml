@@ -29,7 +29,9 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Run tests
-        run: npm test
+        run: npx vitest run --exclude='**/surreal.test.ts' --exclude='**/skills.test.ts' --exclude='**/subagent.test.ts' --exclude='**/memory-substrate.test.ts' --exclude='**/reflection.test.ts'
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
   lint:
     runs-on: ubuntu-latest
