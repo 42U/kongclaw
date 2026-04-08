@@ -28,10 +28,14 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
-      - name: Run tests
-        run: npx vitest run --exclude='**/surreal.test.ts' --exclude='**/skills.test.ts' --exclude='**/subagent.test.ts' --exclude='**/memory-substrate.test.ts' --exclude='**/reflection.test.ts'
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
+      - name: Run unit tests (integration tests require SurrealDB + native modules)
+        run: |
+          npx vitest run \
+            tests/acan.test.ts tests/cli.test.ts tests/errors.test.ts \
+            tests/eval.test.ts tests/graph-context.test.ts tests/health-check.test.ts \
+            tests/identity.test.ts tests/orchestrator.test.ts tests/prefetch.test.ts \
+            tests/retrieval-quality.test.ts tests/subagent-worker.test.ts \
+            tests/supersedes.test.ts tests/tools.test.ts tests/tools/introspect.test.ts
 
   lint:
     runs-on: ubuntu-latest
