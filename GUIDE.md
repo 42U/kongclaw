@@ -1,4 +1,4 @@
-# Zeraclaw — Complete Documentation Guide
+# Zeraclaw. Complete Documentation Guide
 
 > Graph-backed agentic CLI with persistent memory across sessions. Updated: 2026-04-08.
 
@@ -27,14 +27,14 @@ Zeraclaw is a coding agent that remembers. It stores every conversation turn, co
 
 **Key differentiators:**
 
-- **Persistent graph memory** — SurrealDB stores turns, concepts, memories, artifacts, skills, reflections with vector embeddings and 16+ graph edge types (caused_by, supports, contradicts, describes, related_to, etc.)
-- **Adaptive orchestration** — Zero-shot intent classification adapts thinking level, tool limits, and retrieval depth per turn
-- **Multi-stage retrieval** — 8-signal WMR v3 scoring + cross-encoder reranking (98.2% R@5 on LongMemEval)
-- **Learned scoring** — ACAN (Attentive Cross-Attention Network) auto-trains on retrieval telemetry to replace fixed-weight scoring
-- **Constitutive memory** — Agent wakes up knowing who it is via handoff notes, monologue traces, and wake-up synthesis
-- **Causal chains** — Tracks trigger→outcome patterns across sessions for debugging and learning
-- **Skill library** — Extracts reusable procedures from successful multi-step tasks
-- **Metacognitive reflection** — Reviews own performance at session end, stores lessons as high-importance memories
+- **Persistent graph memory**. SurrealDB stores turns, concepts, memories, artifacts, skills, reflections with vector embeddings and 16+ graph edge types (caused_by, supports, contradicts, describes, related_to, etc.)
+- **Adaptive orchestration**. Zero-shot intent classification adapts thinking level, tool limits, and retrieval depth per turn
+- **Multi-stage retrieval**. 8-signal WMR v3 scoring + cross-encoder reranking (98.2% R@5 on LongMemEval)
+- **Learned scoring**. ACAN (Attentive Cross-Attention Network) auto-trains on retrieval telemetry to replace fixed-weight scoring
+- **Constitutive memory**. Agent wakes up knowing who it is via handoff notes, monologue traces, and wake-up synthesis
+- **Causal chains**. Tracks trigger→outcome patterns across sessions for debugging and learning
+- **Skill library**. Extracts reusable procedures from successful multi-step tasks
+- **Metacognitive reflection**. Reviews own performance at session end, stores lessons as high-importance memories
 
 **Tech stack:** TypeScript (Node.js 20+), SurrealDB 3.0, BGE-M3 via node-llama-cpp, Claude Opus 4.6 (Anthropic API) everywhere, pi-tui for terminal UI.
 
@@ -129,7 +129,7 @@ User Input
 
 ### 5 Behavioral Pillars (Core Identity)
 
-Seeded as Tier 0 core memory — always loaded, never evicted:
+Seeded as Tier 0 core memory, always loaded, never evicted:
 
 | Pillar | Priority | Directive |
 |---|---|---|
@@ -155,20 +155,20 @@ Connected by graph edges: `performed`, `owns`, `task_part_of`, `session_task`, `
 
 | File | Lines | Role |
 |---|---|---|
-| `src/graph-context.ts` | 1299 | Context injection pipeline — global budget system, retrieval, scoring, formatting |
-| `src/surreal.ts` | 1323 | Database layer — vector search, graph expand, query helpers |
-| `src/agent.ts` | 1154 | Agent loop — turn handling, smart truncation, full-picture extraction |
-| `src/tui.ts` | 809 | Terminal UI (pi-tui) — pinned editor, scrollable chat, styled output |
-| `src/render.ts` | 602 | Terminal rendering — markdown, syntax highlighting, tool display |
+| `src/graph-context.ts` | 1299 | Context injection pipeline, global budget system, retrieval, scoring, formatting |
+| `src/surreal.ts` | 1323 | Database layer, vector search, graph expand, query helpers |
+| `src/agent.ts` | 1154 | Agent loop, turn handling, smart truncation, full-picture extraction |
+| `src/tui.ts` | 809 | Terminal UI (pi-tui), pinned editor, scrollable chat, styled output |
+| `src/render.ts` | 602 | Terminal rendering, markdown, syntax highlighting, tool display |
 | `src/cli.ts` | 546 | Readline REPL interface (fallback to TUI) |
 | `src/acan.ts` | 555 | ACAN: learned cross-attention scoring model |
 | `src/memory-daemon.ts` | 495 | Worker thread for incremental memory extraction |
 | `src/subagent.ts` | 423 | Subagent spawning (full + incognito modes) |
-| `src/wakeup.ts` | 406 | Session startup — birth cognition, soul graduation, wake-up synthesis |
-| `src/retrieval-quality.ts` | 370 | Post-hoc retrieval telemetry — utilization, waste, tool success |
-| `src/soul.ts` | 350 | Soul/graduation system — learning milestones, 6th pillar unlock |
-| `src/skills.ts` | 346 | Skill library — procedure extraction and retrieval |
-| `src/orchestrator.ts` | 342 | ISMAR-GENT — adaptive config, % of retrieval budget per intent |
+| `src/wakeup.ts` | 406 | Session startup. birth cognition, soul graduation, wake-up synthesis |
+| `src/retrieval-quality.ts` | 370 | Post-hoc retrieval telemetry. utilization, waste, tool success |
+| `src/soul.ts` | 350 | Soul/graduation system. learning milestones, 6th pillar unlock |
+| `src/skills.ts` | 346 | Skill library. procedure extraction and retrieval |
+| `src/orchestrator.ts` | 342 | ISMAR-GENT, adaptive config, % of retrieval budget per intent |
 | `src/cognitive-check.ts` | 316 | Periodic Opus reasoning over retrieved context |
 | `src/tui-components.ts` | 298 | Reusable TUI components |
 | `src/reflection.ts` | 284 | Metacognitive reflection generation |
@@ -204,14 +204,14 @@ Classifies user input into one of 10 categories using BGE-M3 cosine similarity a
 | `unknown` | Below confidence threshold | 15 |
 
 - **Performance:** ~25ms (16ms embed + 5ms cosine + heuristics)
-- **Confidence threshold:** 0.40 — below returns `unknown`
+- **Confidence threshold:** 0.40. below returns `unknown`
 - **Fast-path:** Input < 20 chars skips classification entirely
 
 ### Orchestrator (`orchestrator.ts`)
 
 The ISMAR-GENT orchestrator runs preflight before each turn and postflight after.
 
-**Preflight** produces an adaptive config. Token budgets are derived from `retrievalShare` — a percentage of the global retrieval budget (42K tokens at 200K context). The `tokenBudget` column shows values at 200K context window:
+**Preflight** produces an adaptive config. Token budgets are derived from `retrievalShare`. a percentage of the global retrieval budget (42K tokens at 200K context). The `tokenBudget` column shows values at 200K context window:
 
 | Intent | Tool Limit | Retrieval Share | Token Budget | Thinking | Vector Search (turn/concept/memory) |
 |---|---|---|---|---|---|
@@ -223,7 +223,7 @@ The ISMAR-GENT orchestrator runs preflight before each turn and postflight after
 | reference-prior | 5 | 25% | 10,500 | medium | 40/25/30 |
 | meta-session | 2 | 7% | 2,940 | low | 8/5/8 |
 | multi-step | 12 | 20% | 8,400 | high | 30/20/20 |
-| continuation | inherited | — | inherited | low | skip retrieval |
+| continuation | inherited |. | inherited | low | skip retrieval |
 | LOW_CONFIDENCE | 15 | 8% | 3,360 | low | 12/8/12 |
 
 **Retrieval gating:** High-confidence `simple-question` and `meta-session` intents skip vector search entirely unless input references memory ("we decided", "yesterday", "remember", etc.). Tier 0 core memory still loads regardless.
@@ -235,18 +235,18 @@ The ISMAR-GENT orchestrator runs preflight before each turn and postflight after
 The heart of memory integration. Runs before every LLM call:
 
 1. **Embed** user input via BGE-M3 (~16ms)
-2. **Cache check** — prefetch LRU, cosine > 0.85 → skip DB
+2. **Cache check**. prefetch LRU, cosine > 0.85 → skip DB
 3. **Vector search** across 6 tables: `turn`, `identity_chunk`, `concept`, `memory`, `artifact`, `monologue` (+ tag-boosted concepts in parallel)
-4. **Graph expand** — fetch neighbors of top-K results via edge traversal (responds_to, mentions, related_to, narrower, broader, about_concept, reflects_on, skill_from_task, contradicts, supports, supersedes)
-5. **Causal expand** — traverse `caused_by`, `supports`, `contradicts`, `describes` edges from seed results
-6. **Score** — WMR v3 (8-signal weighted scoring) or ACAN (learned, if active)
-7. **Dedup** — semantic deduplication (cosine > 0.90 or Jaccard > 0.80)
-8. **Rerank** — cross-encoder reranking via bge-reranker-v2-m3 (top-30, 60% WMR + 40% cross-encoder blend)
-9. **Budget** — enforce MAX_CONTEXT_ITEMS, token budget, core memory priority
-10. **Format** — structure as grouped sections with relevance scores
-11. **Inject** — prepend as system block in message array
+4. **Graph expand**. fetch neighbors of top-K results via edge traversal (responds_to, mentions, related_to, narrower, broader, about_concept, reflects_on, skill_from_task, contradicts, supports, supersedes)
+5. **Causal expand**. traverse `caused_by`, `supports`, `contradicts`, `describes` edges from seed results
+6. **Score**. WMR v3 (8-signal weighted scoring) or ACAN (learned, if active)
+7. **Dedup**. semantic deduplication (cosine > 0.90 or Jaccard > 0.80)
+8. **Rerank**. cross-encoder reranking via bge-reranker-v2-m3 (top-30, 60% WMR + 40% cross-encoder blend)
+9. **Budget**. enforce MAX_CONTEXT_ITEMS, token budget, core memory priority
+10. **Format**. structure as grouped sections with relevance scores
+11. **Inject**. prepend as system block in message array
 
-**Global context budget** — a single source of truth derived from the model's context window:
+**Global context budget**. a single source of truth derived from the model's context window:
 
 | Allocation | Share | Tokens (at 200K) | Purpose |
 |---|---|---|---|
@@ -255,7 +255,7 @@ The heart of memory integration. Runs before every LLM call:
 | Core memory | 15% of budget | 21,000 | Tier 0 (always-loaded pillars) + Tier 1 (session-pinned) |
 | Overhead | 5% of budget | 7,000 | Rules, anchors, formatting |
 
-The total budget is 70% of the context window (the remaining 30% is system prompt + model response headroom). All limits derive from `recalcBudgets(contextWindow)` — called whenever the context window is set.
+The total budget is 70% of the context window (the remaining 30% is system prompt + model response headroom). All limits derive from `recalcBudgets(contextWindow)`. called whenever the context window is set.
 
 **Key derived constants (at 200K):**
 - `MAX_CONTEXT_ITEMS`: 140 (token budget is the real gate, not item count)
@@ -264,8 +264,8 @@ The total budget is 70% of the context window (the remaining 30% is system promp
 - `TIER1_BUDGET_CHARS`: ~16,000 (~4,700 tokens)
 
 **Core memory tiers:**
-- **Tier 0** — Always loaded every turn, never scored or evicted (5 behavioral pillars, identity rules)
-- **Tier 1** — Session-pinned, loaded at session start, deactivated on session end (proactive thoughts, working context)
+- **Tier 0**. Always loaded every turn, never scored or evicted (5 behavioral pillars, identity rules)
+- **Tier 1**. Session-pinned, loaded at session start, deactivated on session end (proactive thoughts, working context)
 
 **Pressure scaling:** Onset at 50% context fill, min scale 0.5 (never cuts retrieval below half). Prevents context window overflow in long sessions.
 
@@ -273,9 +273,9 @@ The total budget is 70% of the context window (the remaining 30% is system promp
 
 A worker thread runs alongside the main Opus conversation, calling Opus for incremental extraction on each turn batch:
 
-- **Causal chains** — trigger→outcome patterns with type (debug/refactor/feature/fix), success flag, and confidence. Creates graph edges: `caused_by`, `supports`, `contradicts`. Each chain's description is embedded as a searchable memory node linked via `describes` edges to both trigger and outcome, making chains discoverable by semantic search (not just graph traversal)
-- **Monologues** — inner thought traces categorized as doubt, tradeoff, alternative, insight, or realization
-- **Resolved memories** — marks fully-addressed memories so they decay in future retrieval
+- **Causal chains**. trigger→outcome patterns with type (debug/refactor/feature/fix), success flag, and confidence. Creates graph edges: `caused_by`, `supports`, `contradicts`. Each chain's description is embedded as a searchable memory node linked via `describes` edges to both trigger and outcome, making chains discoverable by semantic search (not just graph traversal)
+- **Monologues**. inner thought traces categorized as doubt, tradeoff, alternative, insight, or realization
+- **Resolved memories**. marks fully-addressed memories so they decay in future retrieval
 
 **Skill extraction** runs after successful multi-step sessions (5+ tool calls):
 - Opus extracts: name, description, preconditions, steps (tool + args pattern), postconditions
@@ -295,13 +295,13 @@ Tracks 6 quality signals per retrieved item:
 | Recency | Exponential decay from creation time | 0–1 |
 | LLM relevance | Optional LLM-judged score | 0–1 / null |
 
-Results are stored in `retrieval_outcome` and feed ACAN training once 5,000+ samples accumulate. Tool success uses majority vote (>= 50% of batch) — a single exploratory failure doesn't tank the whole turn.
+Results are stored in `retrieval_outcome` and feed ACAN training once 5,000+ samples accumulate. Tool success uses majority vote (>= 50% of batch). a single exploratory failure doesn't tank the whole turn.
 
 **Real-time suppression:** Memories retrieved 5+ times with <5% avg utilization are pre-filtered from scoring. Tiered utility penalties apply: -0.15 for <5% util, -0.06 for <15%.
 
 ### ACAN Learned Scoring (`acan.ts`)
 
-Attentive Cross-Attention Network — replaces fixed WMR weights with learned scoring.
+Attentive Cross-Attention Network. replaces fixed WMR weights with learned scoring.
 
 **Architecture:**
 - Input: queryEmbedding (1024-dim), candidateEmbedding (1024-dim)
@@ -312,7 +312,7 @@ Attentive Cross-Attention Network — replaces fixed WMR weights with learned sc
 
 **Training:** TypeScript SGD with manual backprop, ~131K parameters, trains in 10–30s on 5,000+ samples. Validation split with early stopping and LR decay. Weights persisted to `~/.kongclaw/acan_weights.json`. Retrains when data grows 50%+ or weights >7 days old.
 
-**Status:** Ships inactive — auto-trains and activates when `retrieval_outcome` table has 5,000+ records.
+**Status:** Ships inactive. auto-trains and activates when `retrieval_outcome` table has 5,000+ records.
 
 ### Cognitive Checks (`cognitive-check.ts`)
 
@@ -347,7 +347,7 @@ Generates lessons via Opus, stored as high-importance memories with category (`f
 | Monologues | ≥ 5 |
 | Time span | ≥ 3 days |
 
-Once graduated, the agent generates a Soul document — a self-authored identity statement.
+Once graduated, the agent generates a Soul document. a self-authored identity statement.
 
 ### Constitutive Memory (`wakeup.ts`, `identity.ts`)
 
@@ -388,11 +388,11 @@ Spawn autonomous child agents for delegated tasks.
 | **incognito** | Isolated database | No access to parent; merge later via `/merge` |
 
 **IPC protocol:** Parent ↔ child via `process.send()`/`process.on('message')`:
-- `IpcStartMessage` — config, SurrealDB credentials, API key
-- `IpcOutputMessage` — streaming text
-- `IpcToolMessage` — tool execution events
-- `IpcCompleteMessage` — final result with stats
-- `IpcErrorMessage` — failure
+- `IpcStartMessage`. config, SurrealDB credentials, API key
+- `IpcOutputMessage`. streaming text
+- `IpcToolMessage`. tool execution events
+- `IpcCompleteMessage`. final result with stats
+- `IpcErrorMessage`. failure
 
 ---
 
@@ -462,16 +462,16 @@ Standard coding agent tools provided by `@mariozechner/pi-coding-agent`:
 
 | Tool | File | Description |
 |---|---|---|
-| `recall` | `src/tools/recall.ts` | Search persistent memory graph — past conversations, decisions, concepts, artifacts, skills |
+| `recall` | `src/tools/recall.ts` | Search persistent memory graph. past conversations, decisions, concepts, artifacts, skills |
 | `introspect` | `src/tools/introspect.ts` | Database inspection (4 actions: status, count, verify, query) |
 | `core_memory` | `src/tools/core-memory.ts` | View and manage Tier 0/1 core memory entries |
 
 **Introspect actions:**
-- `status` — Connection info, ping, table counts, embedding counts
-- `count` — Row count for any table, with optional filters (active, embedded, recent, etc.)
-- `verify` — Look up a specific record by ID, display fields (strips large embedding arrays)
-- `query` — Run predefined query templates (recent, sessions, embedding_coverage)
-- `errors` — View last 30 swallowed errors this session (debug/warn/error levels)
+- `status`. Connection info, ping, table counts, embedding counts
+- `count`. Row count for any table, with optional filters (active, embedded, recent, etc.)
+- `verify`. Look up a specific record by ID, display fields (strips large embedding arrays)
+- `query`. Run predefined query templates (recent, sessions, embedding_coverage)
+- `errors`. View last 30 swallowed errors this session (debug/warn/error levels)
 
 ---
 
@@ -526,8 +526,8 @@ Component-based terminal UI using `@mariozechner/pi-tui`:
 
 | Variable | Default | Description |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | Claude API key (required) |
-| `ANTHROPIC_OAUTH_TOKEN` | — | Alternative: OAuth token (sk-ant-oat prefix) |
+| `ANTHROPIC_API_KEY` |. | Claude API key (required) |
+| `ANTHROPIC_OAUTH_TOKEN` |. | Alternative: OAuth token (sk-ant-oat prefix) |
 | `SURREAL_URL` | `ws://localhost:8042/rpc` | SurrealDB WebSocket endpoint |
 | `SURREAL_HTTP_URL` | (derived from SURREAL_URL) | SurrealDB HTTP endpoint |
 | `SURREAL_USER` | `root` | SurrealDB username |
@@ -639,16 +639,16 @@ npx tsx src/bench-longmemeval.ts /path/to/longmemeval_s_cleaned.json --mode rera
 
 ### Per Turn
 
-1. **User input** — read from CLI/TUI
-2. **Preflight** — intent classification (~25ms), complexity estimation, adaptive config
-3. **Predictive prefetch** — generate 2–4 predicted queries, fire background vector searches
-4. **Context injection** — embed input → cache check → vector search → graph expand → score → budget → format → inject as system block
-5. **LLM call** — stream response via pi-agent-core, execute tool calls. Tool results use smart truncation: head+tail preservation for errors/JSON/summaries, 2K char minimum floor, 5% of context window per result
-6. **Tool tracking** — record each tool call to retrieval-quality and orchestrator
-7. **Response complete** — evaluate retrieval utilization (6 quality signals), write `retrieval_outcome` records. Full turn text stored to DB (no caps on persistence)
-8. **Memory daemon** — send turn batch to worker thread. Opus sees up to 600K chars of complete session transcript for full-picture extraction (causal chains, monologues, resolved memories)
-9. **Cognitive check** (every 2–3 turns) — call Opus for directives, grading, continuity
-10. **Postflight** — record `orchestrator_metrics`, detect steering candidates
+1. **User input**. read from CLI/TUI
+2. **Preflight**. intent classification (~25ms), complexity estimation, adaptive config
+3. **Predictive prefetch**. generate 2–4 predicted queries, fire background vector searches
+4. **Context injection**. embed input → cache check → vector search → graph expand → score → budget → format → inject as system block
+5. **LLM call**. stream response via pi-agent-core, execute tool calls. Tool results use smart truncation: head+tail preservation for errors/JSON/summaries, 2K char minimum floor, 5% of context window per result
+6. **Tool tracking**. record each tool call to retrieval-quality and orchestrator
+7. **Response complete**. evaluate retrieval utilization (6 quality signals), write `retrieval_outcome` records. Full turn text stored to DB (no caps on persistence)
+8. **Memory daemon**. send turn batch to worker thread. Opus sees up to 600K chars of complete session transcript for full-picture extraction (causal chains, monologues, resolved memories)
+9. **Cognitive check** (every 2–3 turns). call Opus for directives, grading, continuity
+10. **Postflight**. record `orchestrator_metrics`, detect steering candidates
 
 ### Shutdown
 
@@ -656,7 +656,7 @@ npx tsx src/bench-longmemeval.ts /path/to/longmemeval_s_cleaned.json --mode rera
 2. Gather session metrics → generate reflection if quality thresholds crossed
 3. Extract skills from successful multi-step sessions
 4. Graduate high-confidence causal chains to skills
-5. Active forgetting — garbage collect stale memories and superseded concepts
+5. Active forgetting. garbage collect stale memories and superseded concepts
 6. Deactivate Tier 1 session-scoped core memories
 7. Shutdown memory daemon (wait for in-flight extractions)
 8. Close SurrealDB connection, dispose embeddings + reranker
@@ -668,18 +668,18 @@ npx tsx src/bench-longmemeval.ts /path/to/longmemeval_s_cleaned.json --mode rera
 
 ### Resolved (since v1)
 
-- **Quality telemetry is now proactive** — proven-bad memories (5+ retrievals, <5% utilization) are pre-filtered from scoring. Tiered utility penalties apply in WMR.
-- **ACAN threshold** — set at 5,000+ samples. Check with: `SELECT count() FROM retrieval_outcome GROUP ALL`
-- **Cross-encoder reranking** — bge-reranker-v2-m3 rescores top-30 candidates (98.2% R@5 on LongMemEval).
-- **Active forgetting** — garbage collection prunes stale memories and superseded concepts at session end.
-- **Temporal reasoning** — natural language time patterns ("yesterday", "last week") auto-constrain retrieval.
-- **Concept evolution** — corrections create supersedes edges and decay stale concept stability.
+- **Quality telemetry is now proactive**. proven-bad memories (5+ retrievals, <5% utilization) are pre-filtered from scoring. Tiered utility penalties apply in WMR.
+- **ACAN threshold**. set at 5,000+ samples. Check with: `SELECT count() FROM retrieval_outcome GROUP ALL`
+- **Cross-encoder reranking**. bge-reranker-v2-m3 rescores top-30 candidates (98.2% R@5 on LongMemEval).
+- **Active forgetting**. garbage collection prunes stale memories and superseded concepts at session end.
+- **Temporal reasoning**. natural language time patterns ("yesterday", "last week") auto-constrain retrieval.
+- **Concept evolution**. corrections create supersedes edges and decay stale concept stability.
 
 ### Remaining
 
-- **ONNX embedding backend** — GGUF embeddings via node-llama-cpp have a quality gap vs ONNX/sentence-transformers. Switching to @huggingface/transformers would improve first-stage retrieval.
-- **Distributed multi-agent** — current multi-agent works on a single SurrealDB instance. No replication or cross-network sharing.
-- **Domain-specific embedding fine-tuning** — contrastive learning on retrieval outcome data to adapt BGE-M3 to user-specific vocabulary.
+- **ONNX embedding backend**. GGUF embeddings via node-llama-cpp have a quality gap vs ONNX/sentence-transformers. Switching to @huggingface/transformers would improve first-stage retrieval.
+- **Distributed multi-agent**. current multi-agent works on a single SurrealDB instance. No replication or cross-network sharing.
+- **Domain-specific embedding fine-tuning**. contrastive learning on retrieval outcome data to adapt BGE-M3 to user-specific vocabulary.
 
 ---
 

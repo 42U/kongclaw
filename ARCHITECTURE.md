@@ -1,4 +1,4 @@
-# Zeraclaw — System Architecture Documentation
+# Zeraclaw. System Architecture Documentation
 > Updated: 2026-04-08 | Post-benchmark: cross-encoder reranking, WMR v3, concept supersedes
 
 > **Note:** For comprehensive documentation including tools, TUI, commands, and development setup, see **[GUIDE.md](GUIDE.md)**.
@@ -9,7 +9,7 @@
 
 Zeraclaw is a graph-backed coding agent with persistent memory across sessions. Every conversation turn, concept, decision, and file artifact is stored in SurrealDB. Memory is retrieved via BGE-M3 vector embeddings + graph traversal and injected into the context window before each LLM call.
 
-**Tech stack:** TypeScript (Node.js), SurrealDB 3.0, BGE-M3 via node-llama-cpp (1024-dim HNSW cosine), Claude Opus 4.6 as inference layer (everywhere — chat, extraction, cognitive checks, summarization).
+**Tech stack:** TypeScript (Node.js), SurrealDB 3.0, BGE-M3 via node-llama-cpp (1024-dim HNSW cosine), Claude Opus 4.6 as inference layer (everywhere: chat, extraction, cognitive checks, summarization).
 
 ---
 
@@ -17,20 +17,20 @@ Zeraclaw is a graph-backed coding agent with persistent memory across sessions. 
 
 | File | Lines | Role |
 |---|---|---|
-| `src/graph-context.ts` | 1299 | Context injection pipeline — global budget system, retrieval, scoring, formatting |
-| `src/surreal.ts` | 1323 | Database layer — vector search, graph expand, query helpers |
-| `src/agent.ts` | 1154 | Core agent loop — turn handling, tool execution, smart truncation, extraction |
-| `src/tui.ts` | 809 | Terminal UI (pi-tui) — pinned editor, scrollable chat, styled output |
-| `src/render.ts` | 602 | Terminal rendering — markdown, syntax highlighting, streaming |
+| `src/graph-context.ts` | 1299 | Context injection pipeline, global budget system, retrieval, scoring, formatting |
+| `src/surreal.ts` | 1323 | Database layer, vector search, graph expand, query helpers |
+| `src/agent.ts` | 1154 | Core agent loop, turn handling, tool execution, smart truncation, extraction |
+| `src/tui.ts` | 809 | Terminal UI (pi-tui), pinned editor, scrollable chat, styled output |
+| `src/render.ts` | 602 | Terminal rendering, markdown, syntax highlighting, streaming |
 | `src/acan.ts` | 555 | ACAN: learned cross-attention scoring model (dormant until 1000+ samples) |
 | `src/cli.ts` | 546 | Readline REPL interface (fallback to TUI) |
 | `src/memory-daemon.ts` | 495 | Worker thread for incremental memory extraction per turn |
 | `src/subagent.ts` | 423 | Subagent spawning (full + incognito modes) |
-| `src/wakeup.ts` | 406 | Session startup — birth cognition, soul graduation, wake-up synthesis |
-| `src/retrieval-quality.ts` | 370 | Post-hoc retrieval telemetry — utilization, waste, tool success |
-| `src/soul.ts` | 350 | Soul/graduation system — tracks learning milestones, 6th pillar unlock |
-| `src/skills.ts` | 346 | Skill library — reusable procedure extraction and retrieval |
-| `src/orchestrator.ts` | 342 | ISMAR-GENT — adaptive config per turn, % of retrieval budget |
+| `src/wakeup.ts` | 406 | Session startup. birth cognition, soul graduation, wake-up synthesis |
+| `src/retrieval-quality.ts` | 370 | Post-hoc retrieval telemetry. utilization, waste, tool success |
+| `src/soul.ts` | 350 | Soul/graduation system. tracks learning milestones, 6th pillar unlock |
+| `src/skills.ts` | 346 | Skill library. reusable procedure extraction and retrieval |
+| `src/orchestrator.ts` | 342 | ISMAR-GENT, adaptive config per turn, % of retrieval budget |
 | `src/cognitive-check.ts` | 316 | Periodic Opus reasoning over retrieved context |
 | `src/tui-components.ts` | 298 | Reusable TUI components |
 | `src/reflection.ts` | 284 | Metacognitive reflection generation |
@@ -97,21 +97,21 @@ The heart of memory integration. Two-layer architecture: `graphTransformContext`
 
 ### Layer 1: `graphTransformContext` → `_graphTransformContextInner`
 
-1. **Load core memory** — Tier 0 (always-loaded pillars) + Tier 1 (session-pinned), apply budget caps
-2. **Graceful degradation** — if embeddings or SurrealDB down, pass through with core memory only
-3. **Embed user input** — BGE-M3, contextual: averages with last 3 turn embeddings (query weight 2×)
-4. **Cache check** — prefetch LRU, cosine > 0.85 → skip DB round-trip
-5. **Vector search** — across 5 tables (`turn`, `identity_chunk`, `concept`, `memory`, `artifact`) using per-intent limits
-6. **Graph expand** — 1-hop neighbors of top 20 results
-7. **Causal traversal** — 2-hop traversal across `caused_by`, `supports`, `contradicts`, `describes` edges
-8. **Score** — WMR (6 signals, fixed weights) or ACAN (learned, if active)
-9. **Deduplicate** — cosine > 0.88 → drop duplicate
-10. **Budget gate** — `takeWithConstraints()`: MAX_CONTEXT_ITEMS cap, MIN_RELEVANCE_SCORE floor, token budget
-11. **Ensure recent turns** — guarantee last-session turns appear regardless of similarity
-12. **Skill + reflection retrieval** — for actionable intents (code-write, code-debug, multi-step)
-13. **Format** — grouped sections (Core Directives, Session Context, Behavioral Directives, Resurfacing Memories, Recalled Memories, Concepts, Causal Chains, Skills, Past Turns)
-14. **getRecentTurns** — token-aware conversation grouping within `CONVERSATION_BUDGET_TOKENS` (70K at 200K)
-15. **Inject rules suffix** — tool budget reminders, efficiency examples
+1. **Load core memory**. Tier 0 (always-loaded pillars) + Tier 1 (session-pinned), apply budget caps
+2. **Graceful degradation**. if embeddings or SurrealDB down, pass through with core memory only
+3. **Embed user input**. BGE-M3, contextual: averages with last 3 turn embeddings (query weight 2×)
+4. **Cache check**. prefetch LRU, cosine > 0.85 → skip DB round-trip
+5. **Vector search**. across 5 tables (`turn`, `identity_chunk`, `concept`, `memory`, `artifact`) using per-intent limits
+6. **Graph expand**. 1-hop neighbors of top 20 results
+7. **Causal traversal**. 2-hop traversal across `caused_by`, `supports`, `contradicts`, `describes` edges
+8. **Score**. WMR (6 signals, fixed weights) or ACAN (learned, if active)
+9. **Deduplicate**. cosine > 0.88 → drop duplicate
+10. **Budget gate**. `takeWithConstraints()`: MAX_CONTEXT_ITEMS cap, MIN_RELEVANCE_SCORE floor, token budget
+11. **Ensure recent turns**. guarantee last-session turns appear regardless of similarity
+12. **Skill + reflection retrieval**. for actionable intents (code-write, code-debug, multi-step)
+13. **Format**. grouped sections (Core Directives, Session Context, Behavioral Directives, Resurfacing Memories, Recalled Memories, Concepts, Causal Chains, Skills, Past Turns)
+14. **getRecentTurns**. token-aware conversation grouping within `CONVERSATION_BUDGET_TOKENS` (70K at 200K)
+15. **Inject rules suffix**. tool budget reminders, efficiency examples
 
 ### Layer 2: `convertToLlm` (agent.ts)
 
@@ -125,14 +125,14 @@ Runs on the output of Layer 1:
    - Detects errors, exceptions, JSON, summaries at the end of output
    - When tail is important: 70% head + 30% tail (up to 4K), with middle omission marker
    - Cuts at newline boundaries for clean output
-   - Floor: `MIN_KEEP_CHARS = 2000` — never crushes below 2K
+   - Floor: `MIN_KEEP_CHARS = 2000`. never crushes below 2K
    - Cap: `olderCap = max(2000, TOOL_RESULT_MAX * 0.35)` = 3.5K at 200K
 
 ---
 
 ## Scoring System
 
-### WMR v3 (Working Memory Ranker) — default
+### WMR v3 (Working Memory Ranker). default
 
 8-signal weighted scoring:
 
@@ -149,18 +149,18 @@ Runs on the output of Layer 1:
 
 Minus utility penalty (-0.15 for <5% util, -0.06 for <15%) for proven-bad memories.
 
-### Cross-Encoder Reranking — post-scoring stage
+### Cross-Encoder Reranking. post-scoring stage
 
 After WMR scoring and deduplication, top-30 candidates are rescored by bge-reranker-v2-m3 (a purpose-built cross-encoder running locally via `LlamaRankingContext`). Scores blend 60% WMR + 40% cross-encoder. Benchmarked at 98.2% R@5 on LongMemEval (beats MemPalace's 96.6%).
 
-### ACAN (Attentive Cross-Attention Network) — learned, dormant
+### ACAN (Attentive Cross-Attention Network). learned, dormant
 
 - Architecture: query projection (1024→64), key projection (1024→64), attention logit, final linear layer over [attnLogit, recency, importance, access, neighbor, utility, reflection, keywordOverlap] (8-dim)
 - ~131K params, trains via TypeScript SGD with validation split, early stopping, LR decay
 - Auto-activates after 5,000+ `retrieval_outcome` records. Retrains when data grows 50%+ or weights >7 days old.
 - Weights: `~/.kongclaw/acan_weights.json`
 
-### Concept Supersedes — stale knowledge evolution
+### Concept Supersedes. stale knowledge evolution
 
 When corrections are extracted by the daemon, matching stale concepts (cosine > 0.70) get `supersedes` edges and stability decayed by 60% (floor 0.15). Superseded concepts are filtered from vectorSearch entirely.
 
@@ -184,7 +184,7 @@ Token budgets are percentages of the global retrieval budget (42K tokens at 200K
 | reference-prior | 5 | 25% | 10,500 | medium |
 | meta-session | 2 | 7% | 2,940 | low |
 | multi-step | 12 | 20% | 8,400 | high |
-| continuation | 8 | — | inherited | low |
+| continuation | 8 |. | inherited | low |
 | unknown | 15 | 15% | 6,300 | medium |
 
 **Low-confidence fallback** (confidence < 0.40): 8% = 3,360 tokens.
@@ -230,12 +230,12 @@ Extracted by Opus at session cleanup when the session has meaningful delta (4+ n
 1. Opus sees full session transcript (up to 600K chars, 500 turns, no per-turn cap)
 2. Extracts up to 5 chains: `{triggerText, outcomeText, chainType, success, confidence, description}`
 3. Trigger and outcome texts stored as embedded `memory` nodes (up to 500 chars each)
-4. **Description** (up to 500 chars) — embedded as a separate `memory` node with category `causal_description_{type}`, linked via `describes` edges to both trigger and outcome
+4. **Description** (up to 500 chars). embedded as a separate `memory` node with category `causal_description_{type}`, linked via `describes` edges to both trigger and outcome
 5. Graph edges created: `caused_by`, `supports` (if success) or `contradicts` (if failure)
 
 ### Retrieval
 
-`queryCausalContext()` — graph traversal, not vector search:
+`queryCausalContext()`. graph traversal, not vector search:
 
 1. Start from seed IDs (top vector search results)
 2. Traverse 4 edge types: `caused_by`, `supports`, `contradicts`, `describes`
@@ -246,7 +246,7 @@ Extracted by Opus at session cleanup when the session has meaningful delta (4+ n
 
 ### Why Descriptions Are Embedded Separately
 
-The `causal_chain` table is metadata (trigger_memory, outcome_memory, confidence, type). The trigger/outcome texts are already embedded as memory nodes. But the description ("Fixed import path after refactor broke module resolution") captures the *what happened* narrative — making chains discoverable by semantic search on the summary, not just by graph traversal from already-retrieved memories.
+The `causal_chain` table is metadata (trigger_memory, outcome_memory, confidence, type). The trigger/outcome texts are already embedded as memory nodes. But the description ("Fixed import path after refactor broke module resolution") captures the *what happened* narrative. making chains discoverable by semantic search on the summary, not just by graph traversal from already-retrieved memories.
 
 ---
 
@@ -260,7 +260,7 @@ Session cleanup calls Opus with the complete session for high-quality knowledge 
 |---|---|---|
 | Turns fetched | 500 | Entire session |
 | Per-turn text | No cap | Full turn content including tool results |
-| Transcript | 600K chars | ~175K tokens — fills Opus context |
+| Transcript | 600K chars | ~175K tokens. fills Opus context |
 | Thinking blocks | All, 50K chars | Inner reasoning drives better chains |
 | Previous handoff | Full text | Narrative continuity across sessions |
 | Retrieved memories | Full text | Judge if resolved |
@@ -269,7 +269,7 @@ Session cleanup calls Opus with the complete session for high-quality knowledge 
 
 | Field | Max Length | Description |
 |---|---|---|
-| Handoff | ~500 words | First-person note to future self — decisions, progress, open items, how it felt |
+| Handoff | ~500 words | First-person note to future self. decisions, progress, open items, how it felt |
 | Causal chains | 5 chains, 500 chars each | trigger→outcome with type, success, confidence, description |
 | Skill | 1 skill, 8 steps | Reusable procedure from successful multi-step work |
 | Monologues | 5 entries | Inner thought traces (doubt, tradeoff, insight, realization) |
@@ -291,7 +291,7 @@ Session cleanup calls Opus with the complete session for high-quality knowledge 
 | Assistant | Full text, no cap | BGE-M3 up to 22K chars (80% of model capacity) |
 | Tool result | Full text, no cap | BGE-M3 up to 14K chars (50% of model capacity) |
 
-All turn text is stored complete in SurrealDB. The caps in `convertToLlm` and `getRecentTurns` only affect what goes into the LLM's context window — the DB has the full record for extraction, retrieval, and future sessions.
+All turn text is stored complete in SurrealDB. The caps in `convertToLlm` and `getRecentTurns` only affect what goes into the LLM's context window. the DB has the full record for extraction, retrieval, and future sessions.
 
 ---
 
@@ -324,7 +324,7 @@ Periodic Opus reasoning over retrieved context.
 
 ---
 
-## Database Schema (SurrealDB — NS: zera, DB: memory)
+## Database Schema (SurrealDB. NS: zera, DB: memory)
 
 ### Key Tables
 
@@ -382,7 +382,7 @@ User input
       Evaluate retrieval quality (6 signals)
     → Write retrieval_outcome records
     → Update utility cache
-    → Cognitive check (every 3 turns — grading, directives, preferences)
+    → Cognitive check (every 3 turns. grading, directives, preferences)
     → Memory daemon batch (if token threshold crossed)
   → Session end:
       Full-picture extraction (Opus, 600K char transcript)

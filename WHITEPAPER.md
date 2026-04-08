@@ -6,9 +6,9 @@
 
 ## Abstract
 
-Large language model agents are fundamentally stateless. Each session begins with no memory of previous interactions, forcing users to re-establish context, re-explain preferences, and watch agents repeat mistakes they have already learned from. The dominant approach to adding memory — retrieval-augmented generation (RAG) with flat vector stores — treats all memories as interchangeable text chunks, ignoring the rich structure of relationships, causality, and temporal context that makes human memory useful.
+Large language model agents are fundamentally stateless. Each session begins with no memory of previous interactions, forcing users to re-establish context, re-explain preferences, and watch agents repeat mistakes they have already learned from. The dominant approach to adding memory. retrieval-augmented generation (RAG) with flat vector stores. treats all memories as interchangeable text chunks, ignoring the rich structure of relationships, causality, and temporal context that makes human memory useful.
 
-We present a graph-backed memory architecture that addresses these limitations through five interlocking mechanisms: (1) a knowledge graph with typed edges that captures relationships between memories, not just their content; (2) adaptive retrieval orchestration that matches retrieval depth to task complexity; (3) a self-training scoring model that learns from its own retrieval telemetry; (4) a metacognitive loop that extracts causal patterns, skills, and reflections from agent performance; and (5) constitutive memory that lets agents wake up knowing who they are. Together, these mechanisms create agents with genuine persistent memory — agents that learn from experience, improve over time, and maintain identity continuity across sessions.
+We present a graph-backed memory architecture that addresses these limitations through five interlocking mechanisms: (1) a knowledge graph with typed edges that captures relationships between memories, not just their content; (2) adaptive retrieval orchestration that matches retrieval depth to task complexity; (3) a self-training scoring model that learns from its own retrieval telemetry; (4) a metacognitive loop that extracts causal patterns, skills, and reflections from agent performance; and (5) constitutive memory that lets agents wake up knowing who they are. Together, these mechanisms create agents with genuine persistent memory. agents that learn from experience, improve over time, and maintain identity continuity across sessions.
 
 ---
 
@@ -16,7 +16,7 @@ We present a graph-backed memory architecture that addresses these limitations t
 
 ### 1.1 The Problem with Stateless Agents
 
-Modern LLM agents built on frameworks like LangChain, AutoGPT, or Claude's tool-use API share a fundamental limitation: they are stateless. When a session ends, everything the agent learned — the user's preferences, the codebase it explored, the bugs it debugged, the decisions it made — vanishes. The next session starts from zero.
+Modern LLM agents built on frameworks like LangChain, AutoGPT, or Claude's tool-use API share a fundamental limitation: they are stateless. When a session ends, everything the agent learned. the user's preferences, the codebase it explored, the bugs it debugged, the decisions it made. vanishes. The next session starts from zero.
 
 This creates several compounding problems:
 
@@ -24,35 +24,35 @@ This creates several compounding problems:
 
 **Lost learning.** When an agent discovers that a particular debugging approach works well for a specific codebase, that knowledge dies with the session. The next time a similar bug appears, the agent will try the same failed approaches before stumbling on the same solution.
 
-**No skill accumulation.** Human developers build procedural expertise — they develop reliable workflows for common tasks. Stateless agents cannot accumulate such expertise. Every task is approached as if for the first time.
+**No skill accumulation.** Human developers build procedural expertise: they develop reliable workflows for common tasks. Stateless agents cannot accumulate such expertise. Every task is approached as if for the first time.
 
-**Identity discontinuity.** Users develop working relationships with agents — establishing communication preferences, technical context, and collaborative patterns. Statelessness destroys this relationship after every session.
+**Identity discontinuity.** Users develop working relationships with agents. establishing communication preferences, technical context, and collaborative patterns. Statelessness destroys this relationship after every session.
 
 ### 1.2 The Problem with Simple RAG
 
 The standard solution is retrieval-augmented generation: store conversation history and retrieved documents in a vector database, embed the user's query, find the most similar stored vectors, and inject them into the context window. While RAG is better than nothing, it has fundamental limitations that become severe as memory grows.
 
-**Flat memory treats all items equally.** A vector store has no concept of relationships between memories. It cannot represent "the fix for bug X caused regression Y" or "approach A contradicts approach B." These relationships are crucial for intelligent retrieval — knowing that two memories are causally linked is often more important than knowing they are semantically similar.
+**Flat memory treats all items equally.** A vector store has no concept of relationships between memories. It cannot represent "the fix for bug X caused regression Y" or "approach A contradicts approach B." These relationships are crucial for intelligent retrieval. knowing that two memories are causally linked is often more important than knowing they are semantically similar.
 
 **No adaptation to task complexity.** A RAG system performs the same retrieval regardless of whether the user says "hello" or "debug why the auth middleware is rejecting valid tokens from the refresh endpoint we deployed yesterday." The first needs zero retrieval; the second needs deep, multi-table search across conversation history, code artifacts, and past debugging sessions. Yet most RAG systems have a single retrieval pipeline with fixed parameters.
 
-**No feedback loop.** RAG systems cannot learn which retrievals were useful and which were noise. After injecting 20 memory chunks into the context window, there is no mechanism to evaluate whether those chunks contributed to the response. Over time, this means the system cannot improve — it retrieves with the same accuracy whether it has been running for a day or a year.
+**No feedback loop.** RAG systems cannot learn which retrievals were useful and which were noise. After injecting 20 memory chunks into the context window, there is no mechanism to evaluate whether those chunks contributed to the response. Over time, this means the system cannot improve. it retrieves with the same accuracy whether it has been running for a day or a year.
 
-**Context window pollution.** Perhaps the most insidious problem: injecting irrelevant memories doesn't just waste tokens — it actively degrades response quality. LLMs attend to all context, and irrelevant context competes with relevant context for attention. A system that retrieves 15 chunks but only 3 are useful is performing worse than a system that retrieves only those 3.
+**Context window pollution.** Perhaps the most insidious problem: injecting irrelevant memories doesn't just waste tokens. it actively degrades response quality. LLMs attend to all context, and irrelevant context competes with relevant context for attention. A system that retrieves 15 chunks but only 3 are useful is performing worse than a system that retrieves only those 3.
 
 ### 1.3 Our Approach
 
 We propose a memory architecture built on five pillars that address each of these limitations:
 
-1. **Knowledge graph with typed edges** — Store memories as nodes connected by semantically typed relationships (caused_by, supports, contradicts, narrower, broader, mentions, etc.). This enables retrieval that follows causal chains and conceptual hierarchies, not just embedding similarity.
+1. **Knowledge graph with typed edges**: Store memories as nodes connected by semantically typed relationships (caused_by, supports, contradicts, narrower, broader, mentions, etc.). This enables retrieval that follows causal chains and conceptual hierarchies, not just embedding similarity.
 
-2. **Adaptive retrieval orchestration** — Classify user intent in real-time (~25ms) and adapt retrieval depth, thinking level, tool budgets, and vector search limits per table. Simple questions get minimal retrieval; complex debugging tasks get deep multi-table search.
+2. **Adaptive retrieval orchestration**: Classify user intent in real-time (~25ms) and adapt retrieval depth, thinking level, tool budgets, and vector search limits per table. Simple questions get minimal retrieval; complex debugging tasks get deep multi-table search.
 
-3. **Self-training scoring model** — Replace hand-tuned retrieval weights with a lightweight cross-attention network that trains on the system's own retrieval telemetry. The model starts with fixed weights and progressively learns which memories are genuinely useful for which types of queries.
+3. **Self-training scoring model**: Replace hand-tuned retrieval weights with a lightweight cross-attention network that trains on the system's own retrieval telemetry. The model starts with fixed weights and progressively learns which memories are genuinely useful for which types of queries.
 
-4. **Metacognitive loop** — Extract causal patterns, reusable skills, and reflective lessons from agent performance. The agent doesn't just use memory — it generates new memory from its own experience, creating a feedback loop of continuous improvement.
+4. **Metacognitive loop**: Extract causal patterns, reusable skills, and reflective lessons from agent performance. The agent doesn't just use memory. it generates new memory from its own experience, creating a feedback loop of continuous improvement.
 
-5. **Constitutive memory** — Synthesize a first-person memory briefing at session start from handoff notes, identity chunks, and recent internal monologues. The agent wakes up knowing who it is, what it was working on, and what it was thinking about.
+5. **Constitutive memory**: Synthesize a first-person memory briefing at session start from handoff notes, identity chunks, and recent internal monologues. The agent wakes up knowing who it is, what it was working on, and what it was thinking about.
 
 The remainder of this paper describes each mechanism in detail, with emphasis on the design decisions, architectural trade-offs, and observable properties that make the system work in practice.
 
@@ -62,7 +62,7 @@ The remainder of this paper describes each mechanism in detail, with emphasis on
 
 ### 2.1 The Knowledge Graph
 
-At the foundation of our architecture is a knowledge graph stored in SurrealDB — a multi-model database that supports both document storage and graph relations with HNSW vector indexes.
+At the foundation of our architecture is a knowledge graph stored in SurrealDB. a multi-model database that supports both document storage and graph relations with HNSW vector indexes.
 
 **Node types** represent different categories of knowledge:
 
@@ -71,10 +71,10 @@ At the foundation of our architecture is a knowledge graph stored in SurrealDB �
 | Turn | Conversation history | "User asked to fix the auth bug at 3:14 PM" |
 | Concept | Semantic knowledge | "OAuth2 refresh token rotation" |
 | Memory | Extracted/consolidated summaries | "The auth middleware requires Bearer tokens with RS256 signing" |
-| Artifact | File artifacts | "src/auth/middleware.ts — authentication guard" |
+| Artifact | File artifacts | "src/auth/middleware.ts, authentication guard" |
 | Skill | Reusable procedures | "Debug auth failures: check token expiry → verify signing key → inspect middleware chain" |
-| Reflection | Performance lessons | "Tool calls were wasted on irrelevant files — should have used grep before reading" |
-| Monologue | Internal thought traces | "The user seems frustrated — I should be more concise" |
+| Reflection | Performance lessons | "Tool calls were wasted on irrelevant files, should have used grep before reading" |
+| Monologue | Internal thought traces | "The user seems frustrated. I should be more concise" |
 | Identity Chunk | Agent persona | "I am a graph-backed coding agent with persistent memory" |
 | Core Memory | Always-loaded context | Tier 0: identity rules; Tier 1: session working context |
 
@@ -101,13 +101,13 @@ At the foundation of our architecture is a knowledge graph stored in SurrealDB �
 
 - "The auth middleware supports both JWT and OAuth2, but OAuth2 contradicts the existing session-based auth." `supports` and `contradicts` edges let the system retrieve conflicting information together, enabling the agent to reason about trade-offs rather than receiving isolated facts.
 
-Embedding similarity finds memories that look similar. Graph traversal finds memories that are related — a fundamentally different and often more useful property.
+Embedding similarity finds memories that look similar. Graph traversal finds memories that are related. a fundamentally different and often more useful property.
 
 ### 2.2 Tiered Memory Hierarchy
 
 Not all memory should be subject to relevance scoring. We introduce a three-tier hierarchy:
 
-**Tier 0: Constitutional Memory.** Always loaded every turn, never scored or evicted. This includes identity statements, behavioral rules, and operational constraints. These are loaded via a full `SELECT` query — not vector search — because they are always relevant by definition.
+**Tier 0: Constitutional Memory.** Always loaded every turn, never scored or evicted. This includes identity statements, behavioral rules, and operational constraints. These are loaded via a full `SELECT` query, not vector search, because they are always relevant by definition.
 
 Example Tier 0 entries:
 - "I have a SurrealDB graph database that stores memories across all past sessions"
@@ -120,7 +120,7 @@ Example Tier 1 entries:
 - "Currently investigating the flaky integration test in auth module"
 - "User prefers concise responses without trailing summaries"
 
-**Tier 2: Vector-Searched Memory.** Scored per turn via embedding similarity + graph traversal. Subject to budget enforcement and relevance decay. This is the vast majority of stored knowledge — conversation turns, concepts, consolidated memories, artifacts, skills, reflections.
+**Tier 2: Vector-Searched Memory.** Scored per turn via embedding similarity + graph traversal. Subject to budget enforcement and relevance decay. This is the vast majority of stored knowledge. conversation turns, concepts, consolidated memories, artifacts, skills, reflections.
 
 **Why tiers matter.** The most common failure mode of RAG systems is retrieving irrelevant content alongside relevant content, then hoping the LLM sorts it out. By explicitly separating always-relevant (Tier 0), session-relevant (Tier 1), and query-relevant (Tier 2) memory, we guarantee that core context is present without consuming scoring budget, and that session-specific working context doesn't compete with historical memories for retrieval slots.
 
@@ -142,7 +142,7 @@ Together, they produce a candidate set that captures both semantic similarity an
 
 ### 2.4 Memory Formation Pipeline
 
-Memory isn't just retrieved — it's formed. Our system creates new memories through multiple pathways:
+Memory isn't just retrieved, it's formed. Our system creates new memories through multiple pathways:
 
 **Synchronous (during agent loop):**
 - Every conversation turn is stored with full metadata (session ID, role, token count, model, usage stats)
@@ -152,16 +152,16 @@ Memory isn't just retrieved — it's formed. Our system creates new memories thr
 **Asynchronous (worker thread):**
 - A memory daemon running in a separate worker thread receives turn batches
 - For each batch, it calls a mid-tier model (Sonnet) to extract:
-  - **Causal chains** — trigger→outcome patterns with type (debug/refactor/feature/fix), success flag, and confidence score
-  - **Monologues** — internal thought traces categorized as doubt, tradeoff, alternative, insight, or realization
-  - **Resolved memories** — IDs of memories that have been fully addressed
+  - **Causal chains**: trigger→outcome patterns with type (debug/refactor/feature/fix), success flag, and confidence score
+  - **Monologues**: internal thought traces categorized as doubt, tradeoff, alternative, insight, or realization
+  - **Resolved memories**: IDs of memories that have been fully addressed
 - Extracted data is written to the graph asynchronously, never blocking conversation
 
 **Post-session:**
-- **Skill extraction** — If the session involved 5+ tool calls, Opus extracts a reusable procedure (name, preconditions, steps, postconditions)
-- **Reflection generation** — If quality metrics are poor, Opus generates lessons learned
-- **Causal chain graduation** — High-confidence causal chains are promoted to skills
-- **Handoff note** — An exit summary is generated for the next session's wake-up synthesis
+- **Skill extraction**: If the session involved 5+ tool calls, Opus extracts a reusable procedure (name, preconditions, steps, postconditions)
+- **Reflection generation**: If quality metrics are poor, Opus generates lessons learned
+- **Causal chain graduation**: High-confidence causal chains are promoted to skills
+- **Handoff note**: An exit summary is generated for the next session's wake-up synthesis
 
 **Consolidation:**
 - Old conversation turns are archived to cold storage
@@ -184,7 +184,7 @@ Input 1 is a simple factual question that requires zero retrieval. The LLM alrea
 
 Input 2 is a complex debugging task that benefits from deep retrieval: past conversation turns about the connection pool refactoring, the artifact record for the pool implementation file, any causal chains from previous pool-related debugging, and relevant reflections about concurrency issues.
 
-Yet most RAG systems treat these identically — same retrieval depth, same number of results, same token budget for injected context.
+Yet most RAG systems treat these identically: same retrieval depth, same number of results, same token budget for injected context.
 
 ### 3.2 Zero-Shot Intent Classification
 
@@ -214,7 +214,7 @@ We solve this with a lightweight intent classifier that runs before retrieval. T
 
 ### 3.3 Per-Table Vector Search Limits
 
-The adaptive config doesn't just set a global retrieval budget — it sets per-table vector search limits:
+The adaptive config doesn't just set a global retrieval budget. it sets per-table vector search limits:
 
 | Category | turn | identity | concept | memory | artifact |
 |---|---|---|---|---|---|
@@ -241,7 +241,7 @@ While the LLM processes the user's input through preflight classification, we fi
 - Extract quoted/backtick terms (e.g., "the `refreshToken` function" → search for concept/memory nodes)
 - Intent-specific patterns (code-debug → search for error messages and fix patterns; code-write → search for implementation patterns and test examples)
 
-**LRU cache** stores the results: 10 entries, 5-minute TTL, cosine >0.85 hit threshold. When the main retrieval pipeline runs, it checks the cache first. A cache hit means the vector search result is already available — no database round-trip needed.
+**LRU cache** stores the results: 10 entries, 5-minute TTL, cosine >0.85 hit threshold. When the main retrieval pipeline runs, it checks the cache first. A cache hit means the vector search result is already available. no database round-trip needed.
 
 In coding-heavy sessions, prefetch reduces database round-trips by approximately 30%, with the reduction concentrated in the most latency-sensitive path (the first retrieval call after user input).
 
@@ -251,7 +251,7 @@ In coding-heavy sessions, prefetch reduces database round-trips by approximately
 
 ### 4.1 The Problem with Fixed Weights
 
-The initial scoring function is a Weighted Mean Reciprocal (WMR) — a linear combination of independently computed signals. WMR has evolved through three versions:
+The initial scoring function is a Weighted Mean Reciprocal (WMR). a linear combination of independently computed signals. WMR has evolved through three versions:
 
 ```
 WMR v3 (current):
@@ -272,7 +272,7 @@ These weights work well as a starting point. But they have fundamental limitatio
 
 - **Static.** The weights cannot adapt to different users, projects, or workflows. A user who primarily asks factual questions benefits from higher importance weighting. A user doing exploratory debugging benefits from higher recency weighting. Fixed weights serve both adequately but neither optimally.
 
-- **Linear.** The signals are combined linearly, but their interactions may be nonlinear. A memory that is both highly recent and from a graph neighbor may be more valuable than the linear sum suggests — the recency confirms the neighbor connection is fresh and relevant.
+- **Linear.** The signals are combined linearly, but their interactions may be nonlinear. A memory that is both highly recent and from a graph neighbor may be more valuable than the linear sum suggests. the recency confirms the neighbor connection is fresh and relevant.
 
 - **No cross-attention.** Cosine similarity between the query and a memory is computed as a flat dot product. But different parts of the query may be relevant to different parts of the memory. A cross-attention mechanism can learn to focus on the most relevant dimensions.
 
@@ -309,9 +309,9 @@ queryEmbedding (1024-dim)                  candidateEmbedding (1024-dim)
 
 **Key design decisions:**
 
-- **No softmax.** Unlike standard attention, we compute a raw logit (`q · k / √64`) without softmax normalization. This makes the score candidate-count invariant — adding or removing candidates from the batch doesn't change existing scores. This is important because the number of retrieval candidates varies per turn.
+- **No softmax.** Unlike standard attention, we compute a raw logit (`q · k / √64`) without softmax normalization. This makes the score candidate-count invariant. adding or removing candidates from the batch doesn't change existing scores. This is important because the number of retrieval candidates varies per turn.
 
-- **No value projection.** Standard attention has Q, K, and V projections. We drop V because we don't need a weighted output vector — we need a scalar score. The attention logit itself becomes a feature alongside handcrafted signals.
+- **No value projection.** Standard attention has Q, K, and V projections. We drop V because we don't need a weighted output vector. we need a scalar score. The attention logit itself becomes a feature alongside handcrafted signals.
 
 - **Hybrid features.** The 8-dim feature vector combines the learned attention logit with handcrafted signals (recency, importance, access count, neighbor bonus, proven utility, reflection boost, keyword overlap). This lets the model leverage both learned cross-attention and well-understood heuristic signals. Keyword overlap, in particular, catches exact-match cases that embedding similarity alone misses.
 
@@ -319,7 +319,7 @@ queryEmbedding (1024-dim)                  candidateEmbedding (1024-dim)
 
 ### 4.3 Self-Training from Telemetry
 
-ACAN doesn't require external supervision — it trains on the system's own retrieval telemetry.
+ACAN doesn't require external supervision. it trains on the system's own retrieval telemetry.
 
 **Quality signals per retrieved item:**
 
@@ -357,7 +357,7 @@ The transition from fixed to learned scoring is designed to be invisible:
 4. **Day N+:** ACAN scoring replaces WMR. If ACAN produces an error, system falls back to WMR silently.
 5. **Ongoing:** Weights are persisted to `~/.kongclaw/acan_weights.json` and loaded at startup. Retrained periodically as new telemetry accumulates.
 
-The user never needs to know the transition happened. They may notice improved retrieval relevance — fewer irrelevant chunks in context, more useful memories surfacing — but the mechanism is entirely transparent.
+The user never needs to know the transition happened. They may notice improved retrieval relevance. fewer irrelevant chunks in context, more useful memories surfacing. but the mechanism is entirely transparent.
 
 ---
 
@@ -367,7 +367,7 @@ The user never needs to know the transition happened. They may notice improved r
 
 Vector search with cosine similarity is a bi-encoder approach: query and document are encoded independently, and their interaction is limited to a dot product in embedding space. This is fast (O(1) per comparison with HNSW) but loses fine-grained semantic relationships.
 
-Cross-encoder reranking addresses this by jointly encoding query-document pairs through a full transformer forward pass. The model sees both texts simultaneously and can attend across them, understanding relationships that cosine similarity misses — paraphrasing, implicit references, negation, and context-dependent meaning.
+Cross-encoder reranking addresses this by jointly encoding query-document pairs through a full transformer forward pass. The model sees both texts simultaneously and can attend across them, understanding relationships that cosine similarity misses. paraphrasing, implicit references, negation, and context-dependent meaning.
 
 ### 5.2 Two-Stage Retrieve-Then-Rerank
 
@@ -387,7 +387,7 @@ causalContext ─────────────┘                        
 
 ### 5.3 Benchmark Results
 
-Evaluated on LongMemEval (500 questions, 6 types) — the standard academic benchmark for AI memory retrieval:
+Evaluated on LongMemEval (500 questions, 6 types). the standard academic benchmark for AI memory retrieval:
 
 | Configuration | R@5 | Cost |
 |---|---|---|
@@ -405,7 +405,7 @@ The two-stage pipeline beats MemPalace's raw baseline by +1.6% R@5 with zero API
 
 **Blending preserves production signals.** Pure cross-encoder replacement (100% reranker score) achieves the same 98.2% on the benchmark but would lose WMR's recency, proven utility, and graph neighbor signals in production. The 60/40 blend ensures that a memory's track record and temporal context still influence ranking.
 
-**Graceful degradation.** If the reranker model is not present, the pipeline works without it — WMR scoring alone is the fallback. The reranker is auto-detected at startup from `~/.node-llama-cpp/models/bge-reranker-v2-m3-Q8_0.gguf`.
+**Graceful degradation.** If the reranker model is not present, the pipeline works without it. WMR scoring alone is the fallback. The reranker is auto-detected at startup from `~/.node-llama-cpp/models/bge-reranker-v2-m3-Q8_0.gguf`.
 
 ---
 
@@ -420,25 +420,25 @@ We introduce periodic cognitive checks: a lightweight model (Haiku, ~300ms, ~$0.
 **Frequency:** Turn 2, then every 3 turns (2, 5, 8, 11...). This balances insight against cost.
 
 **Evaluation targets:**
-- **Retrieval grading** — Each injected memory is rated relevant/irrelevant with a 0-1 score and a reason
-- **Session continuity** — Is this turn a continuation, repetition, new topic, or tangent?
-- **User preference detection** — Has the user expressed preferences about communication style, depth, or approach?
+- **Retrieval grading**: Each injected memory is rated relevant/irrelevant with a 0-1 score and a reason
+- **Session continuity**: Is this turn a continuation, repetition, new topic, or tangent?
+- **User preference detection**: Has the user expressed preferences about communication style, depth, or approach?
 
 **Directive generation.** The cognitive check produces typed directives that are injected into the next turn's context:
 
 | Directive Type | Meaning | Example |
 |---|---|---|
-| `repeat` | User is repeating a question — previous answer was inadequate | "Provide more detail about the auth flow" |
-| `continuation` | User is continuing a thread — maintain context | "Keep the connection pool context loaded" |
+| `repeat` | User is repeating a question. previous answer was inadequate | "Provide more detail about the auth flow" |
+| `continuation` | User is continuing a thread. maintain context | "Keep the connection pool context loaded" |
 | `contradiction` | Retrieved memories contradict each other | "Session 12 says use JWT; Session 15 says use sessions" |
 | `noise` | Retrieved memory is irrelevant to current task | "The Python memory about list comprehensions is not relevant to this TypeScript task" |
-| `insight` | An important pattern or connection was noticed | "User has asked about auth 3 times — may be a recurring pain point" |
+| `insight` | An important pattern or connection was noticed | "User has asked about auth 3 times. may be a recurring pain point" |
 
 These directives steer agent behavior without requiring explicit rules. The metacognitive layer observes and advises; the agent loop incorporates the advice naturally.
 
 ### 6.2 Causal Chain Extraction
 
-Human experts remember not just what happened, but what caused what. "I changed the database connection timeout, and that fixed the intermittent failures" is a causal chain — trigger (timeout change) → outcome (failures fixed). This causal structure is the basis of debugging expertise.
+Human experts remember not just what happened, but what caused what. "I changed the database connection timeout, and that fixed the intermittent failures" is a causal chain. trigger (timeout change) → outcome (failures fixed). This causal structure is the basis of debugging expertise.
 
 Our memory daemon extracts causal chains from every conversation turn batch:
 
@@ -454,17 +454,17 @@ Our memory daemon extracts causal chains from every conversation turn batch:
 ```
 
 **Graph edges created:**
-- `caused_by` — outcome was caused by trigger
-- `supports` — when outcome confirms trigger (success path)
-- `contradicts` — when outcome contradicts trigger (failure path)
+- `caused_by`: outcome was caused by trigger
+- `supports`: when outcome confirms trigger (success path)
+- `contradicts`: when outcome contradicts trigger (failure path)
 
-**Why this matters for retrieval.** When a similar database connection issue arises in a future session, vector search may find the outcome memory ("intermittent failures stopped"). Graph traversal then follows the `caused_by` edge to find the trigger memory ("changed timeout from 5s to 30s") — providing the actual solution, not just a description of the problem being solved.
+**Why this matters for retrieval.** When a similar database connection issue arises in a future session, vector search may find the outcome memory ("intermittent failures stopped"). Graph traversal then follows the `caused_by` edge to find the trigger memory ("changed timeout from 5s to 30s"). providing the actual solution, not just a description of the problem being solved.
 
 This is something flat vector stores fundamentally cannot do. The solution and the problem may have completely different embedding representations. Only the structural relationship connects them.
 
 ### 6.3 Skill Extraction
 
-Skills are the highest-level form of memory — reusable procedures extracted from successful task completion.
+Skills are the highest-level form of memory. reusable procedures extracted from successful task completion.
 
 **Extraction trigger:** A session that involved 5+ tool calls (indicating a non-trivial multi-step task) and completed successfully.
 
@@ -489,7 +489,7 @@ Skills are the highest-level form of memory — reusable procedures extracted fr
 
 **Skill graduation.** High-confidence causal chains (confidence > 0.8, success = true) are automatically promoted to skills. This means the agent builds its skill library from experience, not from explicit programming.
 
-**Skill retrieval.** Skills have their own vector embedding and HNSW index. When a new task arrives, relevant skills surface alongside other memories. The agent sees "I've done this before — here's how" rather than discovering the approach from scratch.
+**Skill retrieval.** Skills have their own vector embedding and HNSW index. When a new task arrives, relevant skills surface alongside other memories. The agent sees "I've done this before. here's how" rather than discovering the approach from scratch.
 
 **Success/failure tracking.** Each time a skill is applied and the outcome is observable, the success/failure counts are updated. Skills with high failure rates decay in retrieval priority. Skills with high success rates grow more prominent. This creates a natural selection pressure: effective procedures survive; ineffective ones fade.
 
@@ -515,7 +515,7 @@ At session end, the system evaluates its own performance and generates lessons.
 
 **Categories:** `failure_pattern` (what went wrong), `efficiency` (what could be more efficient), `approach_strategy` (what approach would have been better).
 
-**How reflections improve future performance.** Reflections are stored as high-importance memories with their own vector embeddings. When a similar situation arises in a future session, the reflection surfaces in retrieval: "Last time I debugged auth, I wasted tool calls reading irrelevant files. Use grep first." The agent doesn't change its weights or behavior rules — but it receives better context, which produces better behavior.
+**How reflections improve future performance.** Reflections are stored as high-importance memories with their own vector embeddings. When a similar situation arises in a future session, the reflection surfaces in retrieval: "Last time I debugged auth, I wasted tool calls reading irrelevant files. Use grep first." The agent doesn't change its weights or behavior rules. but it receives better context, which produces better behavior.
 
 This is **self-improvement without fine-tuning**. The model's parameters never change. What changes is the information it receives, curated by its own metacognitive evaluation.
 
@@ -529,7 +529,7 @@ When the memory daemon extracts a correction (user correcting the assistant), th
 4. Decay concept stability by 60% (multiplicative factor 0.4, floor 0.15)
 5. Mark concept with `superseded_at` timestamp
 
-Superseded concepts are filtered from vectorSearch and tag-boosted retrieval entirely (`WHERE superseded_at IS NONE`). This ensures corrections don't just compete with stale knowledge — they replace it structurally in the graph.
+Superseded concepts are filtered from vectorSearch and tag-boosted retrieval entirely (`WHERE superseded_at IS NONE`). This ensures corrections don't just compete with stale knowledge. They replace it structurally in the graph.
 
 **Why this matters.** Without supersedes, a high-cosine stale concept can outrank a lower-cosine correction indefinitely. With supersedes, the correction wins not by scoring higher but by removing its competitor from the candidate pool. The graph records *why* the concept was deprecated (the supersedes edge), preserving the historical chain.
 
@@ -547,7 +547,7 @@ We introduce a graduation system that tracks the accumulation of experiential da
 | Monologues | ≥ 5 | Internal thought processes engaged |
 | Time span | ≥ 3 days | Temporal depth of experience |
 
-Once all thresholds are met, the system generates a "Soul document" — a self-authored identity statement synthesized from the agent's accumulated experience. This is not a programmed personality; it is a personality derived from patterns in the agent's own behavior, preferences, and reflections.
+Once all thresholds are met, the system generates a "Soul document". a self-authored identity statement synthesized from the agent's accumulated experience. This is not a programmed personality; it is a personality derived from patterns in the agent's own behavior, preferences, and reflections.
 
 The philosophical implication is worth stating directly: an agent that has debugged hundreds of bugs, reflected on its own failures, extracted reusable skills, and developed a consistent communication style has a form of experiential identity that is meaningfully different from a prompted persona. Whether this constitutes genuine selfhood is a question we leave to philosophers. What we observe is that graduated agents exhibit more consistent behavior, more accurate self-descriptions, and higher user satisfaction than non-graduated agents with static personas.
 
@@ -559,8 +559,8 @@ The philosophical implication is worth stating directly: an agent that has debug
 
 Even with persistent memory, the first turn of a new session is uniquely difficult. The agent must answer two questions before it can be useful:
 
-1. **Who am I?** — What is my identity, personality, communication style, and set of capabilities?
-2. **Where was I?** — What was I working on, what was the state of the project, what open threads exist?
+1. **Who am I?**: What is my identity, personality, communication style, and set of capabilities?
+2. **Where was I?**: What was I working on, what was the state of the project, what open threads exist?
 
 RAG systems handle question 1 poorly (identity chunks compete with other memories for retrieval slots) and question 2 not at all (there's no mechanism to summarize the state at session start).
 
@@ -568,27 +568,27 @@ RAG systems handle question 1 poorly (identity chunks compete with other memorie
 
 At session start, before the user speaks, the system gathers four inputs:
 
-1. **Handoff note** — The exit summary from the previous session, written by the agent itself
-2. **Identity chunks** — Core identity statements (hardcoded + user-defined)
-3. **Recent monologues** — The 5 most recent internal thought traces
-4. **Depth signals** — Session count, memory count, monologue count, span days
+1. **Handoff note**: The exit summary from the previous session, written by the agent itself
+2. **Identity chunks**: Core identity statements (hardcoded + user-defined)
+3. **Recent monologues**: The 5 most recent internal thought traces
+4. **Depth signals**: Session count, memory count, monologue count, span days
 
 These are fed to Opus with a synthesis prompt: "Write a first-person briefing of what you remember, what you were working on, and what you were thinking about."
 
 The resulting briefing is injected into the system prompt as a `[CONSTITUTIVE MEMORY]` block:
 
 ```
-[CONSTITUTIVE MEMORY — This is what you remember from before this session started]
+[CONSTITUTIVE MEMORY. This is what you remember from before this session started]
 
 I've been working with the user on their authentication system for the past three days.
-Yesterday we refactored the connection pool to handle concurrent requests better —
-the timeout was the root cause, not the pool size as we initially thought. I noticed
+Yesterday we refactored the connection pool to handle concurrent requests better.
+The timeout was the root cause, not the pool size as we initially thought. I noticed
 the user prefers concise responses and gets frustrated when I repeat context they
 already know. There are still intermittent failures in the refresh token rotation
 that we haven't investigated yet.
 ```
 
-The agent's first response already reflects this context. The user experiences continuity — the agent picks up where it left off — rather than the blank-slate amnesia of stateless systems.
+The agent's first response already reflects this context. The user experiences continuity. the agent picks up where it left off. rather than the blank-slate amnesia of stateless systems.
 
 ### 7.3 Handoff Notes
 
@@ -601,7 +601,7 @@ The wake-up synthesis is only as good as the handoff note from the previous sess
 
 This creates a chain of continuity: session N generates a handoff note → session N+1's wake-up synthesis reads it → session N+1 generates its own handoff note → session N+2 benefits from both.
 
-Over time, the handoff chain becomes a compressed narrative of the agent's experience — not raw conversation logs, but curated summaries of what matters for the next session.
+Over time, the handoff chain becomes a compressed narrative of the agent's experience, not raw conversation logs, but curated summaries of what matters for the next session.
 
 ### 7.4 Startup Cognition
 
@@ -611,7 +611,7 @@ Beyond the briefing, we generate **proactive thoughts** at session start. Based 
 - Open questions or investigations
 - Hypotheses about the user's current priorities
 
-These are pinned as Tier 1 core memory for the session — they persist throughout but are deactivated at shutdown. The effect is that the agent arrives with initiative: "I notice we've been working on auth for three sessions. The refresh token rotation is still broken — should we investigate that?"
+These are pinned as Tier 1 core memory for the session and persist throughout but are deactivated at shutdown. The effect is that the agent arrives with initiative: "I notice we've been working on auth for three sessions. The refresh token rotation is still broken, should we investigate that?"
 
 The agent thinks before the user speaks.
 
@@ -629,15 +629,15 @@ A full-mode subagent shares the parent's database (same namespace and database).
 
 An incognito subagent operates on a completely isolated database. It cannot read the parent's memories, and its own memories are stored separately. After completion, the user can selectively merge results back via an explicit merge command.
 
-**Use case:** Exploratory or risky tasks where failure shouldn't pollute the main graph. "Try rewriting the auth module using a different approach — I want to see if it works, but don't contaminate the memory graph if it fails."
+**Use case:** Exploratory or risky tasks where failure shouldn't pollute the main graph. "Try rewriting the auth module using a different approach. I want to see if it works, but don't contaminate the memory graph if it fails."
 
 ### 8.3 Memory Isolation as Architecture
 
-The full/incognito distinction is not just a privacy feature — it's an architectural decision about knowledge contamination.
+The full/incognito distinction is not just a privacy feature. it's an architectural decision about knowledge contamination.
 
 When an agent explores a hypothesis that turns out to be wrong, the exploration creates memories: "I tried approach X and it seemed promising." If those memories are in the main graph, they will surface in future retrieval, potentially leading the agent down the same wrong path again. Worse, the "seemed promising" framing may override the actual failure outcome in retrieval scoring.
 
-Incognito mode solves this by isolating the experiment. If it succeeds, the user merges the results. If it fails, the memories are discarded — the main graph never learns the wrong lesson.
+Incognito mode solves this by isolating the experiment. If it succeeds, the user merges the results. If it fails, the memories are discarded. the main graph never learns the wrong lesson.
 
 This is analogous to a scientist keeping a separate lab notebook for speculative experiments, only transferring confirmed results to the official record.
 
@@ -679,14 +679,14 @@ We define utilization as the degree to which injected context appears in the age
 
 A score of 0.0 means the memory was completely ignored. A score of 1.0 means the response directly referenced the memory's content.
 
-**Why utilization matters:** It directly measures the value of retrieval. A system with 90% average utilization is injecting almost exclusively useful context. A system with 10% utilization is wasting 90% of its retrieval on noise — noise that actively degrades response quality by competing for attention.
+**Why utilization matters:** It directly measures the value of retrieval. A system with 90% average utilization is injecting almost exclusively useful context. A system with 10% utilization is wasting 90% of its retrieval on noise. noise that actively degrades response quality by competing for attention.
 
 ### 9.3 Comparative Evaluation
 
 The system includes built-in evaluation commands:
 
-- `/eval` — Run a predefined suite of prompts with and without graph context, measuring token savings and response quality
-- `/compare <prompt>` — Compare a single prompt's performance with full vs minimal context
+- `/eval`. Run a predefined suite of prompts with and without graph context, measuring token savings and response quality
+- `/compare <prompt>`. Compare a single prompt's performance with full vs minimal context
 
 These enable empirical measurement of the memory system's impact. In practice, graph context reduces token usage by 30-60% on continuation tasks (where prior conversation is relevant) while maintaining or improving response quality.
 
@@ -710,15 +710,15 @@ These enable empirical measurement of the memory system's impact. In practice, g
 
 Several items from the original future work have been implemented:
 
-- **Real-time quality suppression** — Proven-bad memory pre-filtering (5+ retrievals with <5% utilization → filtered from candidate pool) and tiered utility penalties in WMR scoring (-0.15/-0.06).
-- **Retrieval gating** — `skipRetrieval` for continuation, meta-session, and high-confidence simple-question intents (with memory reference detection override).
-- **Cross-encoder reranking** — Two-stage retrieve-then-rerank pipeline achieving 98.2% R@5 on LongMemEval.
-- **Concept evolution** — Supersedes system for correction-driven knowledge decay.
-- **Keyword overlap scoring** — Catches exact-match cases embeddings miss.
-- **Embedding adaptation** — ACAN self-trains on retrieval outcome telemetry (5,000+ samples), replacing fixed WMR weights with a learned cross-attention scorer.
-- **Active forgetting** — Two-tier garbage collection: stale never-accessed memories (>14 days, low importance) and proven-useless memories (5+ retrievals, <2% utilization). Cascade edge cleanup prevents orphaned graph relations. Superseded concepts with floor stability are also pruned.
-- **Temporal reasoning** — Time-filtered vector search via `timeRange` parameter. Natural language temporal patterns ("yesterday", "last week", "3 days ago") are auto-detected in preflight and constrain retrieval to the relevant time window.
-- **Multi-agent attribution** — `agent_id` field on memory, concept, and skill tables for tracking which agent created each record. Incognito subagents auto-merge on successful completion (importance >= 3.0, cosine dedup 0.9, max 50 nodes).
+- **Real-time quality suppression**: Proven-bad memory pre-filtering (5+ retrievals with <5% utilization → filtered from candidate pool) and tiered utility penalties in WMR scoring (-0.15/-0.06).
+- **Retrieval gating**: `skipRetrieval` for continuation, meta-session, and high-confidence simple-question intents (with memory reference detection override).
+- **Cross-encoder reranking**: Two-stage retrieve-then-rerank pipeline achieving 98.2% R@5 on LongMemEval.
+- **Concept evolution**: Supersedes system for correction-driven knowledge decay.
+- **Keyword overlap scoring**: Catches exact-match cases embeddings miss.
+- **Embedding adaptation**: ACAN self-trains on retrieval outcome telemetry (5,000+ samples), replacing fixed WMR weights with a learned cross-attention scorer.
+- **Active forgetting**: Two-tier garbage collection: stale never-accessed memories (>14 days, low importance) and proven-useless memories (5+ retrievals, <2% utilization). Cascade edge cleanup prevents orphaned graph relations. Superseded concepts with floor stability are also pruned.
+- **Temporal reasoning**: Time-filtered vector search via `timeRange` parameter. Natural language temporal patterns ("yesterday", "last week", "3 days ago") are auto-detected in preflight and constrain retrieval to the relevant time window.
+- **Multi-agent attribution**: `agent_id` field on memory, concept, and skill tables for tracking which agent created each record. Incognito subagents auto-merge on successful completion (importance >= 3.0, cosine dedup 0.9, max 50 nodes).
 
 ### 10.3 Future Directions
 
@@ -732,9 +732,9 @@ Several items from the original future work have been implemented:
 
 ## 11. Conclusion
 
-The dominant paradigm for LLM agent memory — flat vector stores with fixed retrieval — is fundamentally insufficient for agents that need to learn, adapt, and maintain identity across sessions. We have presented an alternative architecture built on five interlocking mechanisms:
+The dominant paradigm for LLM agent memory. flat vector stores with fixed retrieval. is fundamentally insufficient for agents that need to learn, adapt, and maintain identity across sessions. We have presented an alternative architecture built on five interlocking mechanisms:
 
-1. **A knowledge graph** that captures not just content but relationships — causality, support, contradiction, hierarchy — enabling retrieval that follows the structure of knowledge rather than just its surface similarity.
+1. **A knowledge graph** that captures not just content but relationships. causality, support, contradiction, hierarchy. enabling retrieval that follows the structure of knowledge rather than just its surface similarity.
 
 2. **Adaptive orchestration** that matches retrieval depth to task complexity, preventing both under-retrieval (missing relevant context for complex tasks) and over-retrieval (injecting noise for simple tasks).
 
@@ -744,9 +744,9 @@ The dominant paradigm for LLM agent memory — flat vector stores with fixed ret
 
 5. **Constitutive memory** that synthesizes a first-person briefing at session start, providing identity continuity and initiative that stateless agents cannot achieve.
 
-Together, these mechanisms shift the paradigm from "agents with tools" to "agents with memory" — systems that accumulate expertise, learn from mistakes, build procedural knowledge, and maintain coherent identity across arbitrarily many sessions.
+Together, these mechanisms shift the paradigm from "agents with tools" to "agents with memory". systems that accumulate expertise, learn from mistakes, build procedural knowledge, and maintain coherent identity across arbitrarily many sessions.
 
-The key insight underlying the entire architecture is that memory is not a feature — it is infrastructure. Just as a database is not optional for a web application, persistent memory is not optional for an agent that needs to be useful across more than one session. The question is not whether agents need memory, but what kind of memory serves them best.
+The key insight underlying the entire architecture is that memory is not a feature. it is infrastructure. Just as a database is not optional for a web application, persistent memory is not optional for an agent that needs to be useful across more than one session. The question is not whether agents need memory, but what kind of memory serves them best.
 
 We believe the answer is structured, adaptive, self-improving, and metacognitive. The architecture presented here is one realization of that answer. We hope it serves as a foundation for others.
 
@@ -789,7 +789,7 @@ We believe the answer is structured, adaptive, self-improving, and metacognitive
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | Claude API access |
+| `ANTHROPIC_API_KEY` |. | Claude API access |
 | `SURREAL_URL` | `ws://localhost:8042/rpc` | SurrealDB endpoint |
 | `SURREAL_NS` / `SURREAL_DB` | `zera` / `memory` | Database namespace |
 | `EMBED_MODEL_PATH` | `~/.node-llama-cpp/models/bge-m3-q4_k_m.gguf` | Embedding model |
@@ -825,4 +825,4 @@ We believe the answer is structured, adaptive, self-improving, and metacognitive
 
 ---
 
-*Implementation: [github.com/42U/kongclaw](https://github.com/42U/kongclaw) — TypeScript, SurrealDB, BGE-M3, Claude*
+*Implementation: [github.com/42U/kongclaw](https://github.com/42U/kongclaw). TypeScript, SurrealDB, BGE-M3, Claude*

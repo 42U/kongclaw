@@ -10,7 +10,7 @@ How to package and distribute Zeraclaw so anyone can install and run it without 
 # Install globally via npm
 npm install -g kongclaw
 
-# One-time setup — downloads dependencies, prompts for API key
+# One-time setup. downloads dependencies, prompts for API key
 kongclaw setup
 
 # Start using it
@@ -32,7 +32,7 @@ Zeraclaw requires three things users won't have out of the box:
 | bge-reranker-v2-m3 | Cross-encoder reranker (optional) | ~606MB | Manual download, auto-detected |
 | Anthropic API key | LLM access | N/A | Interactive prompt during setup |
 
-### SurrealDB — Standalone Binary Download
+### SurrealDB. Standalone Binary Download
 
 SurrealDB publishes standalone binaries for every platform. We download the correct one during setup rather than requiring Docker.
 
@@ -44,7 +44,7 @@ SurrealDB publishes standalone binaries for every platform. We download the corr
 **Why not Docker?**
 Docker is a heavy prerequisite that many users don't have installed. A single binary is simpler, faster to start, and has no dependency chain.
 
-### BGE-M3 Embedding Model — Auto-Download
+### BGE-M3 Embedding Model. Auto-Download
 
 The GGUF quantized model is downloaded from HuggingFace on first setup.
 
@@ -55,7 +55,7 @@ The GGUF quantized model is downloaded from HuggingFace on first setup.
 
 `node-llama-cpp` also provides `createModelDownloader()` which can be used as an alternative to a raw fetch.
 
-### Anthropic API Key — Interactive Prompt
+### Anthropic API Key. Interactive Prompt
 
 ```
 Enter your Anthropic API key: sk-ant-api03-...
@@ -97,7 +97,7 @@ After setup, the user's machine has:
 
 ---
 
-## `kongclaw setup` — Detailed Flow
+## `kongclaw setup`. Detailed Flow
 
 ```
 kongclaw setup
@@ -233,7 +233,7 @@ npm install -g kongclaw
 
 **Why npm:**
 - Target audience is developers (they have Node)
-- `node-llama-cpp` compiles native bindings via npm postinstall — this just works
+- `node-llama-cpp` compiles native bindings via npm postinstall. this just works
 - Already have a `bin` field configured
 - `npx kongclaw` works for try-before-install
 
@@ -241,8 +241,8 @@ npm install -g kongclaw
 
 | Channel | Benefit | Complexity |
 |---|---|---|
-| **Homebrew tap** | `brew install kongclaw` — native feel on mac/linux | Medium — need a tap repo, formula that handles native deps |
-| **Standalone binary** | No Node required, single download | Hard — `node-llama-cpp` native bindings make `pkg`/`bun compile` tricky |
+| **Homebrew tap** | `brew install kongclaw`. native feel on mac/linux | Medium. need a tap repo, formula that handles native deps |
+| **Standalone binary** | No Node required, single download | Hard. `node-llama-cpp` native bindings make `pkg`/`bun compile` tricky |
 | **Docker image** | Fully self-contained, everything bundled | Easy to build, but ironic given we're trying to avoid requiring Docker |
 
 ---
@@ -278,7 +278,7 @@ The setup and runtime should handle these gracefully:
 | No internet during setup | Clear error: "Download failed. Check your connection and retry `kongclaw setup`" |
 | Disk full during model download | Detect, clean partial file, report needed space |
 | Port 8042 already in use | Try next port (8043, 8044...), save to config |
-| SurrealDB crashes mid-session | Graceful degradation — switch to recency-only context, warn user |
+| SurrealDB crashes mid-session | Graceful degradation. switch to recency-only context, warn user |
 | Embedding model file corrupted | Detect on load failure, prompt to re-download with `kongclaw setup --redownload` |
 | No C++ compiler for node-llama-cpp | npm install fails with clear message pointing to prerequisites |
 | API key invalid | Detect on first API call, prompt to update with `kongclaw setup --key` |
@@ -288,7 +288,7 @@ The setup and runtime should handle these gracefully:
 ## Security Considerations
 
 - API key stored in `~/.kongclaw/config.json` with `0600` permissions (owner read/write only)
-- SurrealDB binds to `127.0.0.1` only — not accessible from network
+- SurrealDB binds to `127.0.0.1` only, not accessible from network
 - No telemetry, no phoning home
-- All embeddings computed locally — conversation content never leaves the machine (except to Anthropic for the LLM call)
+- All embeddings computed locally. conversation content never leaves the machine (except to Anthropic for the LLM call)
 - Add `~/.kongclaw/` to global gitignore recommendations in setup output
