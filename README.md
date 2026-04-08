@@ -71,12 +71,15 @@ npm install
 
 ### 3. Run
 
+TUI mode (the full experience):
 ```bash
 npm start
-npm run cli
 ```
 
-`npm start` launches the full TUI experience. `npm run cli` is a basic readline REPL for debugging.
+Basic readline REPL (fallback/debug):
+```bash
+npm run cli
+```
 
 On first run, a setup wizard walks you through configuration. The embedding model (BGE-M3, ~420MB) downloads automatically. If SurrealDB is installed but not running, KongClaw starts a managed instance for you.
 
@@ -304,20 +307,37 @@ Soul document: working style, self-observations, earned values grounded in speci
 
 ## Development
 
+TypeScript watch mode:
 ```bash
 npm run dev
+```
+
+Run the test suite (vitest, 404 tests):
+```bash
 npm test
+```
+
+Watch mode tests:
+```bash
 npm run test:watch
+```
+
+Build to dist/ (also copies schema.surql):
+```bash
 npm run build
 ```
 
 ### Run the Benchmark
 
+Download the LongMemEval dataset:
 ```bash
 mkdir -p /tmp/longmemeval-data
 curl -fsSL -o /tmp/longmemeval-data/longmemeval_s_cleaned.json \
   https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json
+```
 
+Run the benchmark (supports raw, hybrid, rerank, and hybrid-rerank modes):
+```bash
 npx tsx src/bench-longmemeval.ts /tmp/longmemeval-data/longmemeval_s_cleaned.json --mode rerank
 ```
 
