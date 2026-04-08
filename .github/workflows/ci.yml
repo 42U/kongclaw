@@ -57,7 +57,7 @@ jobs:
 
       - name: Verify no secrets in tracked files
         run: |
-          if grep -rn "sk-ant-[a-zA-Z0-9]\{20,\}" src/ tests/ --include="*.ts" --include="*.json" | head -5; then
+          if grep -rPn "sk-ant-[a-zA-Z0-9]{20,}" src/ tests/ --include="*.ts" --include="*.json" 2>/dev/null | head -5; then
             echo "::error::Possible real API key in source files"
             exit 1
           fi
